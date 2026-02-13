@@ -2,54 +2,60 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dev Music Player</title>
+<title>Dev Music Player Pro</title>
 
 <style>
+*{margin:0;padding:0;box-sizing:border-box;}
+
 body{
-  margin:0;
-  font-family:Arial, sans-serif;
+  font-family:Segoe UI;
   background:linear-gradient(135deg,#0f0c29,#302b63,#24243e);
   color:white;
-  text-align:center;
+  padding-bottom:80px;
 }
 
+/* SPLASH */
 #splash{
   height:100vh;
   display:flex;
   flex-direction:column;
   justify-content:center;
   align-items:center;
+  background:#141e30;
 }
 
+/* NAV */
 .nav{
   display:flex;
   justify-content:space-around;
-  background:#111;
-  padding:10px;
+  padding:12px;
+  background:rgba(0,0,0,0.5);
 }
 
 .nav button{
-  padding:8px 15px;
+  background:rgba(255,255,255,0.1);
+  color:white;
   border:none;
-  border-radius:8px;
-  background:white;
+  padding:8px 15px;
+  border-radius:20px;
   cursor:pointer;
-  font-weight:bold;
 }
 
-.card{
-  padding:15px;
-}
+/* CARD */
+.card{padding:15px;text-align:center;}
 
 #player{
   margin-top:15px;
+  border-radius:12px;
+  overflow:hidden;
 }
 
+/* SEARCH CARD */
 .videoCard{
-  background:#1e1e1e;
-  border-radius:10px;
-  margin:10px;
+  background:rgba(255,255,255,0.05);
   padding:10px;
+  margin:10px 0;
+  border-radius:12px;
   cursor:pointer;
 }
 
@@ -58,92 +64,153 @@ body{
   border-radius:8px;
 }
 
-#searchSection,
-#historySection{
-  display:none;
-}
-
-ul{
-  list-style:none;
-  padding:0;
-}
-
-li{
-  background:#1e1e1e;
-  margin:8px;
-  padding:8px;
-  border-radius:6px;
+.videoCard button{
+  margin-top:5px;
+  background:#ff4b2b;
+  border:none;
+  padding:5px 10px;
+  border-radius:15px;
+  color:white;
   cursor:pointer;
 }
+
+/* HISTORY & FAVORITES */
+ul{list-style:none;padding:0;}
+li{
+  background:rgba(255,255,255,0.05);
+  margin:8px 0;
+  padding:8px;
+  border-radius:8px;
+  cursor:pointer;
+}
+
+/* EQUALIZER */
+.equalizer{
+  display:flex;
+  justify-content:center;
+  margin-top:10px;
+}
+
+.equalizer span{
+  width:4px;
+  height:20px;
+  background:#ff4b2b;
+  margin:0 3px;
+  animation:bounce 1s infinite ease-in-out;
+}
+
+.equalizer span:nth-child(2){animation-delay:0.2s;}
+.equalizer span:nth-child(3){animation-delay:0.4s;}
+.equalizer span:nth-child(4){animation-delay:0.6s;}
+.equalizer span:nth-child(5){animation-delay:0.8s;}
+
+@keyframes bounce{
+  0%,100%{height:10px;}
+  50%{height:30px;}
+}
+
+/* BOTTOM CONTROL BAR */
+.bottomBar{
+  position:fixed;
+  bottom:0;
+  width:100%;
+  background:#111;
+  display:flex;
+  justify-content:space-around;
+  padding:10px;
+}
+
+.bottomBar button{
+  background:none;
+  border:none;
+  color:white;
+  font-size:20px;
+  cursor:pointer;
+}
+
+#searchSection,#historySection,#favoriteSection{display:none;}
 </style>
 </head>
 
 <body>
 
-<!-- Splash Screen -->
+<!-- SPLASH -->
 <div id="splash">
   <h1>🎵 Dev Music Player</h1>
-  <p>Loading Music...</p>
+  <p>Loading...</p>
 </div>
 
-<!-- Main App -->
 <div id="mainApp" style="display:none;">
 
 <div class="nav">
   <button onclick="showHome()">Home</button>
   <button onclick="showSearch()">Search</button>
   <button onclick="showHistory()">History</button>
+  <button onclick="showFavorites()">Favorites</button>
 </div>
 
+<!-- HOME -->
 <div class="card" id="homeSection">
-  <h2 id="songTitle">No song playing</h2>
+  <h3 id="songTitle">No song playing</h3>
   <div id="player"></div>
+
+  <div class="equalizer">
+    <span></span><span></span><span></span><span></span><span></span>
+  </div>
 </div>
 
+<!-- SEARCH -->
 <div class="card" id="searchSection">
   <input type="text" id="searchInput" placeholder="Search song...">
   <button onclick="searchVideo()">Search</button>
   <div id="searchResults"></div>
 </div>
 
+<!-- HISTORY -->
 <div class="card" id="historySection">
   <h3>History</h3>
   <ul id="historyList"></ul>
 </div>
 
+<!-- FAVORITES -->
+<div class="card" id="favoriteSection">
+  <h3>Favorites ❤️</h3>
+  <ul id="favoriteList"></ul>
+</div>
+
+</div>
+
+<!-- BOTTOM CONTROL -->
+<div class="bottomBar">
+  <button onclick="prevVideo()">⏮</button>
+  <button onclick="playPause()">⏯</button>
+  <button onclick="nextVideo()">⏭</button>
 </div>
 
 <script src="https://www.youtube.com/iframe_api"></script>
 
 <script>
+const API_KEY="AIzaSyAfJIHop06R94612CGPmMiTByy5hUarL1M";
+let player,ready=false;
 
-// 🔑 YOUR YOUTUBE API KEY
-const API_KEY = "AIzaSyAfJIHop06R94612CGPmMiTByy5hUarL1M";
-
-let player;
-let ready=false;
-
-// Splash hide after 2 sec
-document.addEventListener("DOMContentLoaded", function(){
+// Splash
+document.addEventListener("DOMContentLoaded",()=>{
   setTimeout(()=>{
-    document.getElementById("splash").style.display="none";
-    document.getElementById("mainApp").style.display="block";
+    splash.style.display="none";
+    mainApp.style.display="block";
   },2000);
 });
 
-// YouTube Player Ready
+// Player
 function onYouTubeIframeAPIReady(){
   player=new YT.Player("player",{
     height:"250",
     width:"100%",
     events:{
-      'onReady':function(){
-        ready=true;
-      },
-      'onStateChange':function(event){
-        if(event.data==YT.PlayerState.PLAYING){
-          let title=player.getVideoData().title;
-          document.getElementById("songTitle").innerText=title;
+      onReady:()=>{ready=true;},
+      onStateChange:(e)=>{
+        if(e.data==YT.PlayerState.PLAYING){
+          songTitle.innerText=player.getVideoData().title;
         }
       }
     }
@@ -151,58 +218,44 @@ function onYouTubeIframeAPIReady(){
 }
 
 // Navigation
-function showHome(){
-  document.getElementById("homeSection").style.display="block";
-  document.getElementById("searchSection").style.display="none";
-  document.getElementById("historySection").style.display="none";
+function showHome(){hideAll();homeSection.style.display="block";}
+function showSearch(){hideAll();searchSection.style.display="block";}
+function showHistory(){hideAll();historySection.style.display="block";loadHistory();}
+function showFavorites(){hideAll();favoriteSection.style.display="block";loadFavorites();}
+function hideAll(){
+  homeSection.style.display="none";
+  searchSection.style.display="none";
+  historySection.style.display="none";
+  favoriteSection.style.display="none";
 }
 
-function showSearch(){
-  document.getElementById("homeSection").style.display="none";
-  document.getElementById("searchSection").style.display="block";
-  document.getElementById("historySection").style.display="none";
-}
-
-function showHistory(){
-  document.getElementById("homeSection").style.display="none";
-  document.getElementById("searchSection").style.display="none";
-  document.getElementById("historySection").style.display="block";
-  loadHistory();
-}
-
-// Search Function
+// Search
 function searchVideo(){
-  let query=document.getElementById("searchInput").value;
-  if(!query) return;
-
-  fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=6&q=${query}&key=${API_KEY}`)
+  let q=searchInput.value;
+  if(!q) return;
+  fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=6&q=${q}&key=${API_KEY}`)
   .then(res=>res.json())
   .then(data=>{
-    let results=document.getElementById("searchResults");
-    results.innerHTML="";
-
+    searchResults.innerHTML="";
     data.items.forEach(item=>{
-      let videoId=item.id.videoId;
+      let id=item.id.videoId;
       let title=item.snippet.title;
-      let thumbnail=item.snippet.thumbnails.medium.url;
+      let thumb=item.snippet.thumbnails.medium.url;
 
       let div=document.createElement("div");
       div.className="videoCard";
       div.innerHTML=`
-        <img src="${thumbnail}">
+        <img src="${thumb}">
         <p>${title}</p>
+        <button onclick="addFavorite('${id}','${title}')">❤️ Save</button>
       `;
-
-      div.onclick=function(){
-        playVideo(videoId,title);
-      };
-
-      results.appendChild(div);
+      div.onclick=()=>playVideo(id,title);
+      searchResults.appendChild(div);
     });
   });
 }
 
-// Play Video
+// Play
 function playVideo(id,title){
   showHome();
   if(ready){
@@ -211,29 +264,49 @@ function playVideo(id,title){
   }
 }
 
-// Save History
-function saveHistory(title,id){
-  let history=JSON.parse(localStorage.getItem("musicHistory"))||[];
-  history.unshift({title,id});
-  localStorage.setItem("musicHistory",JSON.stringify(history));
+// Controls
+function playPause(){
+  let state=player.getPlayerState();
+  if(state==1) player.pauseVideo();
+  else player.playVideo();
 }
+function nextVideo(){player.nextVideo();}
+function prevVideo(){player.previousVideo();}
 
-// Load History
+// History
+function saveHistory(title,id){
+  let h=JSON.parse(localStorage.getItem("history"))||[];
+  h.unshift({title,id});
+  localStorage.setItem("history",JSON.stringify(h));
+}
 function loadHistory(){
-  let history=JSON.parse(localStorage.getItem("musicHistory"))||[];
-  let list=document.getElementById("historyList");
-  list.innerHTML="";
-
-  history.forEach(item=>{
+  let h=JSON.parse(localStorage.getItem("history"))||[];
+  historyList.innerHTML="";
+  h.forEach(item=>{
     let li=document.createElement("li");
     li.innerText=item.title;
-    li.onclick=function(){
-      playVideo(item.id,item.title);
-    };
-    list.appendChild(li);
+    li.onclick=()=>playVideo(item.id,item.title);
+    historyList.appendChild(li);
   });
 }
 
+// Favorites
+function addFavorite(id,title){
+  let f=JSON.parse(localStorage.getItem("favorites"))||[];
+  f.unshift({title,id});
+  localStorage.setItem("favorites",JSON.stringify(f));
+  alert("Added to Favorites ❤️");
+}
+function loadFavorites(){
+  let f=JSON.parse(localStorage.getItem("favorites"))||[];
+  favoriteList.innerHTML="";
+  f.forEach(item=>{
+    let li=document.createElement("li");
+    li.innerText=item.title;
+    li.onclick=()=>playVideo(item.id,item.title);
+    favoriteList.appendChild(li);
+  });
+}
 </script>
 
 </body>
