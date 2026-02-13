@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dev YouTube Player Blue</title>
+<title>Debraj Pramanik Music Player</title>
 <style>
 body{
   margin:0;
@@ -11,6 +11,28 @@ body{
   color:white;
   text-align:center;
 }
+
+/* Splash Screen */
+#splash{
+  position:fixed;
+  top:0;left:0;width:100%;height:100%;
+  background:#0b65c2;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  z-index:1000;
+  animation:fadeOut 0.5s ease-in-out forwards;
+  animation-delay:3s;
+}
+#splash h1{font-size:32px;margin-bottom:10px;}
+#splash p{font-size:18px;}
+
+/* fadeout animation */
+@keyframes fadeOut{
+  to{opacity:0;visibility:hidden;}
+}
+
 header{
   padding:15px;
   font-size:24px;
@@ -111,6 +133,12 @@ header{
 </head>
 <body>
 
+<!-- Splash Screen -->
+<div id="splash">
+  <h1>DEBRAJ PRAMANIK MUSIC PLAYER</h1>
+  <p>Loading...</p>
+</div>
+
 <header>🎵 Dev YouTube Player Blue</header>
 
 <div class="nav">
@@ -148,6 +176,13 @@ header{
 <script src="https://www.youtube.com/iframe_api"></script>
 <script>
 let player, ready=false;
+
+/* Hide splash screen after 3 sec */
+window.onload = function(){
+  setTimeout(()=>{
+    document.getElementById("splash").style.display="none";
+  }, 3000);
+};
 
 function onYouTubeIframeAPIReady(){
   player = new YT.Player('player',{
