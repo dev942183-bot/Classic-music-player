@@ -98,6 +98,13 @@ function showHistory(){
   searchSection.style.display="none";
   historySection.style.display="block";
   loadHistory();
+} 
+
+function addFavorite(id,title){
+  let fav=JSON.parse(localStorage.getItem("favorites"))||[];
+  fav.unshift({title,id});
+  localStorage.setItem("favorites",JSON.stringify(fav));
+  alert("Added to Favorites ❤️");
 }
 
 /* YouTube Player */
