@@ -1,342 +1,215 @@
  <!DOCTYPE html>
 <html>
 <head>
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dev Music Player Pro</title>
+<title>Dev Music Player</title>
 
 <style>
-*{margin:0;padding:0;box-sizing:border-box;}
-
-body{
-  font-family:Segoe UI, sans-serif;
-  background:linear-gradient(135deg,#0f0c29,#302b63,#24243e);
-  color:white;
-  padding-bottom:90px;
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg,#0f0c29,#302b63,#24243e);
+  color: white;
+  text-align: center;
 }
 
-/* SPLASH */
-#splash{
-  height:100vh;
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  align-items:center;
-  background:#141e30;
-  text-align:center;
+header {
+  padding: 20px;
+  font-size: 24px;
+  font-weight: bold;
 }
 
-/* NAV */
-.nav{
-  display:flex;
-  justify-content:space-around;
-  padding:12px;
-  background:rgba(0,0,0,0.5);
-  backdrop-filter:blur(10px);
+.album-art {
+  width: 250px;
+  height: 250px;
+  margin: 20px auto;
+  border-radius: 20px;
+  background-size: cover;
+  background-position: center;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
 }
 
-.nav button{
-  background:rgba(255,255,255,0.1);
-  border:none;
-  color:white;
-  padding:8px 15px;
-  border-radius:20px;
-  cursor:pointer;
-  font-weight:600;
-  transition:.3s;
+.song-title {
+  font-size: 20px;
+  margin-top: 10px;
 }
 
-.nav button:hover{
-  background:#ff4b2b;
+.artist {
+  font-size: 14px;
+  opacity: 0.7;
 }
 
-/* CARD */
-.card{padding:15px;text-align:center;}
-
-#songTitle{
-  margin-bottom:10px;
-  font-weight:600;
+.equalizer {
+  display: flex;
+  justify-content: center;
+  margin: 20px 0;
 }
 
-#player{
-  margin-top:10px;
-  border-radius:12px;
-  overflow:hidden;
+.bar {
+  width: 6px;
+  height: 20px;
+  background: #ff4d4d;
+  margin: 0 3px;
+  animation: bounce 1s infinite ease-in-out;
 }
 
-/* SEARCH CARD */
-.videoCard{
-  background:rgba(255,255,255,0.05);
-  padding:10px;
-  margin:10px 0;
-  border-radius:12px;
-  cursor:pointer;
-  transition:.3s;
+.bar:nth-child(2){animation-delay:0.2s;}
+.bar:nth-child(3){animation-delay:0.4s;}
+.bar:nth-child(4){animation-delay:0.6s;}
+.bar:nth-child(5){animation-delay:0.8s;}
+
+@keyframes bounce {
+  0%,100%{height:20px;}
+  50%{height:50px;}
 }
 
-.videoCard:hover{
-  transform:scale(1.03);
+.controls {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  background: rgba(0,0,0,0.8);
+  padding: 15px;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
 }
 
-.videoCard img{
-  width:100%;
-  border-radius:8px;
+button {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 24px;
 }
 
-.videoCard button{
-  margin-top:6px;
-  background:#ff4b2b;
-  border:none;
-  padding:6px 12px;
-  border-radius:20px;
-  color:white;
-  cursor:pointer;
+.progress-container {
+  width: 80%;
+  margin: 10px auto;
 }
 
-/* LIST */
-ul{list-style:none;padding:0;}
-li{
-  background:rgba(255,255,255,0.05);
-  margin:8px 0;
-  padding:8px;
-  border-radius:8px;
-  cursor:pointer;
-  transition:.3s;
-}
-li:hover{background:#ff4b2b;}
-
-/* EQUALIZER */
-.equalizer{
-  display:flex;
-  justify-content:center;
-  margin-top:12px;
-}
-.equalizer span{
-  width:4px;
-  height:15px;
-  background:#ff4b2b;
-  margin:0 3px;
-  animation:bounce 1s infinite ease-in-out;
-}
-.equalizer span:nth-child(2){animation-delay:.2s;}
-.equalizer span:nth-child(3){animation-delay:.4s;}
-.equalizer span:nth-child(4){animation-delay:.6s;}
-.equalizer span:nth-child(5){animation-delay:.8s;}
-
-@keyframes bounce{
-  0%,100%{height:10px;}
-  50%{height:30px;}
+input[type=range] {
+  width: 100%;
 }
 
-/* BOTTOM CONTROL */
-.bottomBar{
-  position:fixed;
-  bottom:0;
-  width:100%;
-  background:#111;
-  display:flex;
-  justify-content:space-around;
-  padding:12px;
-}
-
-.bottomBar button{
-  background:none;
-  border:none;
-  color:white;
-  font-size:22px;
-  cursor:pointer;
-}
-
-#searchSection,
-#historySection,
-#favoriteSection{
-  display:none;
+.favorite-btn {
+  margin-top: 10px;
+  font-size: 18px;
 }
 </style>
 </head>
 
 <body>
 
-<!-- SPLASH -->
-<div id="splash">
-  <h1>🎵 Dev Music Player</h1>
-  <p>Loading...</p>
+<header>🎵 Dev Music Player</header>
+
+<div class="album-art" id="albumArt"></div>
+<div class="song-title" id="title">Loading...</div>
+<div class="artist" id="artist"></div>
+
+<div class="equalizer">
+  <div class="bar"></div>
+  <div class="bar"></div>
+  <div class="bar"></div>
+  <div class="bar"></div>
+  <div class="bar"></div>
 </div>
 
-<div id="mainApp" style="display:none;">
-
-<div class="nav">
-  <button onclick="showHome()">Home</button>
-  <button onclick="showSearch()">Search</button>
-  <button onclick="showHistory()">History</button>
-  <button onclick="showFavorites()">Favorites</button>
+<div class="progress-container">
+  <input type="range" id="progress" value="0">
 </div>
 
-<!-- HOME -->
-<div class="card" id="homeSection">
-  <h3 id="songTitle">No song playing</h3>
-  <div id="player"></div>
+<button class="favorite-btn" onclick="toggleFavorite()">🤍 Favorite</button>
 
-  <div class="equalizer">
-    <span></span><span></span><span></span><span></span><span></span>
-  </div>
+<div class="controls">
+  <button onclick="prevSong()">⏮</button>
+  <button onclick="togglePlay()" id="playBtn">▶</button>
+  <button onclick="nextSong()">⏭</button>
 </div>
 
-<!-- SEARCH -->
-<div class="card" id="searchSection">
-  <input type="text" id="searchInput" placeholder="Search song..." style="padding:8px;border-radius:20px;border:none;width:80%;">
-  <br>
-  <button onclick="searchVideo()">Search</button>
-  <div id="searchResults"></div>
-</div>
-
-<!-- HISTORY -->
-<div class="card" id="historySection">
-  <h3>History</h3>
-  <ul id="historyList"></ul>
-</div>
-
-<!-- FAVORITES -->
-<div class="card" id="favoriteSection">
-  <h3>Favorites ❤️</h3>
-  <ul id="favoriteList"></ul>
-</div>
-
-</div>
-
-<!-- BOTTOM CONTROLS -->
-<div class="bottomBar">
-  <button onclick="prevVideo()">⏮</button>
-  <button onclick="playPause()">⏯</button>
-  <button onclick="nextVideo()">⏭</button>
-</div>
-
-<script src="https://www.youtube.com/iframe_api"></script>
+<audio id="audio"></audio>
 
 <script>
-const API_KEY="AIzaSyAfJIHop06R94612CGPmMiTByy5hUarL1M";
+const songs = [
+{
+  title:"SoundHelix Song 1",
+  artist:"Demo Artist",
+  src:"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+  cover:"https://picsum.photos/300?1"
+},
+{
+  title:"SoundHelix Song 2",
+  artist:"Demo Artist",
+  src:"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
+  cover:"https://picsum.photos/300?2"
+}
+];
 
-let player;
-let ready=false;
+let currentSong = 0;
+const audio = document.getElementById("audio");
+const title = document.getElementById("title");
+const artist = document.getElementById("artist");
+const albumArt = document.getElementById("albumArt");
+const playBtn = document.getElementById("playBtn");
+const progress = document.getElementById("progress");
 
-// Splash
-document.addEventListener("DOMContentLoaded",()=>{
-  setTimeout(()=>{
-    document.getElementById("splash").style.display="none";
-    document.getElementById("mainApp").style.display="block";
-  },2000);
+function loadSong(index){
+  const song = songs[index];
+  audio.src = song.src;
+  title.textContent = song.title;
+  artist.textContent = song.artist;
+  albumArt.style.backgroundImage = `url(${song.cover})`;
+
+  if('mediaSession' in navigator){
+    navigator.mediaSession.metadata = new MediaMetadata({
+      title: song.title,
+      artist: song.artist,
+      artwork: [{src: song.cover, sizes:'300x300', type:'image/jpeg'}]
+    });
+  }
+}
+
+function togglePlay(){
+  if(audio.paused){
+    audio.play();
+    playBtn.textContent="⏸";
+  }else{
+    audio.pause();
+    playBtn.textContent="▶";
+  }
+}
+
+function nextSong(){
+  currentSong=(currentSong+1)%songs.length;
+  loadSong(currentSong);
+  audio.play();
+}
+
+function prevSong(){
+  currentSong=(currentSong-1+songs.length)%songs.length;
+  loadSong(currentSong);
+  audio.play();
+}
+
+audio.addEventListener("timeupdate",()=>{
+  progress.value=(audio.currentTime/audio.duration)*100;
 });
 
-// YouTube Player
-function onYouTubeIframeAPIReady(){
-  player=new YT.Player("player",{
-    height:"250",
-    width:"100%",
-    events:{
-      onReady:()=>{ready=true;},
-      onStateChange:(e)=>{
-        if(e.data===YT.PlayerState.PLAYING){
-          document.getElementById("songTitle").innerText=player.getVideoData().title;
-        }
-      }
-    }
-  });
-}
+progress.addEventListener("input",()=>{
+  audio.currentTime=(progress.value/100)*audio.duration;
+});
 
-// Safe Play/Pause
-function playPause(){
-  if(!player || !ready) return alert("Player loading...");
-  let state=player.getPlayerState();
-  if(state===YT.PlayerState.PLAYING){
-    player.pauseVideo();
+function toggleFavorite(){
+  let fav = localStorage.getItem("favorite");
+  if(fav == currentSong){
+    localStorage.removeItem("favorite");
+    alert("Removed from favorites");
   }else{
-    player.playVideo();
+    localStorage.setItem("favorite",currentSong);
+    alert("Added to favorites");
   }
 }
 
-function nextVideo(){ if(player) player.nextVideo(); }
-function prevVideo(){ if(player) player.previousVideo(); }
-
-// Navigation
-function hideAll(){
-  homeSection.style.display="none";
-  searchSection.style.display="none";
-  historySection.style.display="none";
-  favoriteSection.style.display="none";
-}
-function showHome(){hideAll();homeSection.style.display="block";}
-function showSearch(){hideAll();searchSection.style.display="block";}
-function showHistory(){hideAll();historySection.style.display="block";loadHistory();}
-function showFavorites(){hideAll();favoriteSection.style.display="block";loadFavorites();}
-
-// Search
-function searchVideo(){
-  let q=searchInput.value;
-  if(!q) return;
-
-  fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=6&q=${q}&key=${API_KEY}`)
-  .then(res=>res.json())
-  .then(data=>{
-    searchResults.innerHTML="";
-    data.items.forEach(item=>{
-      let id=item.id.videoId;
-      let title=item.snippet.title;
-      let thumb=item.snippet.thumbnails.medium.url;
-
-      let div=document.createElement("div");
-      div.className="videoCard";
-      div.innerHTML=`
-        <img src="${thumb}">
-        <p>${title}</p>
-        <button onclick="addFavorite('${id}','${title}')">❤️ Save</button>
-      `;
-      div.onclick=()=>playVideo(id,title);
-      searchResults.appendChild(div);
-    });
-  });
-}
-
-function playVideo(id,title){
-  showHome();
-  if(player && ready){
-    player.loadVideoById(id);
-    saveHistory(title,id);
-  }
-}
-
-// History
-function saveHistory(title,id){
-  let h=JSON.parse(localStorage.getItem("history"))||[];
-  h.unshift({title,id});
-  localStorage.setItem("history",JSON.stringify(h));
-}
-function loadHistory(){
-  let h=JSON.parse(localStorage.getItem("history"))||[];
-  historyList.innerHTML="";
-  h.forEach(item=>{
-    let li=document.createElement("li");
-    li.innerText=item.title;
-    li.onclick=()=>playVideo(item.id,item.title);
-    historyList.appendChild(li);
-  });
-}
-
-// Favorites
-function addFavorite(id,title){
-  let f=JSON.parse(localStorage.getItem("favorites"))||[];
-  f.unshift({title,id});
-  localStorage.setItem("favorites",JSON.stringify(f));
-  alert("Added to Favorites ❤️");
-}
-function loadFavorites(){
-  let f=JSON.parse(localStorage.getItem("favorites"))||[];
-  favoriteList.innerHTML="";
-  f.forEach(item=>{
-    let li=document.createElement("li");
-    li.innerText=item.title;
-    li.onclick=()=>playVideo(item.id,item.title);
-    favoriteList.appendChild(li);
-  });
-}
+loadSong(currentSong);
 </script>
 
 </body>
