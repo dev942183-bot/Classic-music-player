@@ -22,7 +22,21 @@
   50% { background-position: 100% 50%; }
   100% { background-position: 0% 50%; }
 }
+.controls {
+  margin-top: 10px;
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
 
+.controls button {
+  flex: 1;
+  background: #333;
+}
+
+.controls button:hover {
+  background: #ff0000;
+}
 .card {
   background: #1f1f2e;
   padding: 25px;
