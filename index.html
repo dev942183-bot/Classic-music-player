@@ -2,31 +2,30 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dev YouTube Music Player Pro</title>
+<title>Dev YouTube Music Player Blue</title>
 <style>
-body{margin:0;font-family:Arial,sans-serif;background:#111;color:white;text-align:center;}
-header{padding:15px;font-size:24px;font-weight:bold;background:#222;}
-.nav{display:flex;justify-content:space-around;background:#222;padding:10px;}
-.nav button{padding:8px 15px;border:none;border-radius:12px;background:#444;color:white;cursor:pointer;}
-.nav button:hover{background:#ff4b2b;}
+body{margin:0;font-family:Arial,sans-serif;background:#1E90FF;color:white;text-align:center;}
+header{padding:15px;font-size:24px;font-weight:bold;background:#0b65c2;}
+.nav{display:flex;justify-content:space-between;background:#0b65c2;padding:10px;}
+.nav button{padding:8px 15px;border:none;border-radius:12px;background:#1565C0;color:white;cursor:pointer;}
+.nav button:hover{background:#1C7ED6;}
 .card{padding:15px;}
 #songTitle{margin:10px;font-weight:600;font-size:18px;}
 #player{margin-top:10px;width:100%;height:250px;}
-.videoCard{background:#222;margin:10px 0;padding:10px;border-radius:12px;cursor:pointer;transition:.3s;}
-.videoCard:hover{background:#333;}
+.videoCard{background:#1565C0;margin:10px 0;padding:10px;border-radius:12px;cursor:pointer;transition:.3s;}
+.videoCard:hover{background:#1C7ED6;}
 .videoCard img{width:100%;border-radius:8px;}
-.bottomBar{position:fixed;bottom:0;width:100%;background:#111;display:flex;justify-content:space-around;padding:12px;}
+.bottomBar{position:fixed;bottom:0;width:100%;background:#0b65c2;display:flex;justify-content:space-around;padding:12px;}
 .bottomBar button{background:none;border:none;color:white;font-size:24px;cursor:pointer;}
 #searchSection,#historySection{display:none;}
 </style>
 </head>
 <body>
 
-<header>🎵 Dev YouTube Player Pro</header>
+<header>🎵 Dev YouTube Player Blue</header>
 
 <div class="nav">
-  <button onclick="showHome()">Home</button>
-  <button onclick="showSearch()">Search</button>
+  <button onclick="goBack()">🔙 Back</button>
   <button onclick="showHistory()">History</button>
 </div>
 
@@ -60,9 +59,9 @@ function onYouTubeIframeAPIReady(){
   player = new YT.Player('player',{
     height:'250',
     width:'100%',
-    playerVars:{rel:0,modestbranding:1},
+    playerVars:{rel:0,modestbranding:1,volume:100},
     events:{
-      'onReady':()=>{ready=true;},
+      'onReady':()=>{ready=true;player.setVolume(100);},
       'onStateChange':onPlayerStateChange
     }
   });
@@ -70,30 +69,12 @@ function onYouTubeIframeAPIReady(){
 
 function onPlayerStateChange(event){
   if(event.data == YT.PlayerState.PLAYING){
-    // Update title
     document.getElementById("songTitle").innerText = player.getVideoData().title;
     updateMediaSession(player.getVideoData().title);
     saveHistory(player.getVideoData().title);
   }
-  // Auto next handled automatically by YouTube playlist
 }
 
-// Load Playlist
-function loadPlaylist(url){
-  if(!ready){alert("Wait 5 seconds..."); return;}
-  if(url.includes("list=")){
-    let listId = url.split("list=")[1].split("&")[0];
-    player.loadPlaylist({
-      list:listId,
-      listType:'playlist',
-      index:0,
-      suggestedQuality:'large'
-    });
-    showHome();
-  } else {alert("Please paste a playlist link!");}
-}
-
-// Controls
 function nextVideo(){if(ready) player.nextVideo();}
 function prevVideo(){if(ready) player.previousVideo();}
 function togglePlay(){
@@ -159,12 +140,12 @@ function showHistory(){
 // Navigation
 function hideAll(){homeSection.style.display="none";searchSection.style.display="none";historySection.style.display="none";}
 function showHome(){hideAll();homeSection.style.display="block";}
-function showSearch(){hideAll();searchSection.style.display="block";}
+function goBack(){showHome();}
 </script>
 
 <div style="margin:20px;">
-  <input type="text" id="playlistLink" placeholder="Paste YouTube playlist link" style="width:70%;padding:8px;border-radius:12px;border:none;">
-  <button onclick="loadPlaylist(playlistLink.value)">Load Playlist</button>
+  <input type="text" id="searchInputBottom" placeholder="Search YouTube..." style="width:80%;padding:8px;border-radius:12px;border:none;">
+  <button onclick="searchVideo()">Search</button>
 </div>
 
 </body>
