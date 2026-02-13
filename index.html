@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dev YouTube Music Player</title>
+<title>Dev YouTube Music Player Pro</title>
 <style>
 body{margin:0;font-family:Arial,sans-serif;background:#111;color:white;text-align:center;}
 header{padding:15px;font-size:24px;font-weight:bold;background:#222;}
@@ -22,7 +22,7 @@ header{padding:15px;font-size:24px;font-weight:bold;background:#222;}
 </head>
 <body>
 
-<header>🎵 Dev YouTube Player</header>
+<header>🎵 Dev YouTube Player Pro</header>
 
 <div class="nav">
   <button onclick="showHome()">Home</button>
@@ -55,8 +55,8 @@ header{padding:15px;font-size:24px;font-weight:bold;background:#222;}
 <script src="https://www.youtube.com/iframe_api"></script>
 <script>
 let player, ready=false, titleInterval;
-let currentVideoIndex = 0;
 let playlistIds = [];
+let currentVideoIndex = 0;
 
 function onYouTubeIframeAPIReady(){
   player = new YT.Player('player',{
@@ -79,6 +79,9 @@ function onPlayerStateChange(event){
       updateMediaSession(title);
       saveHistory(title);
     },500);
+  } else if(event.data==YT.PlayerState.ENDED){
+    // autoplay next
+    nextVideo();
   }
 }
 
@@ -92,18 +95,38 @@ function loadPlaylist(url){
   } else {alert("Please paste a playlist link!");}
 }
 
-function nextVideo(){if(ready) player.nextVideo();}
-function prevVideo(){if(ready) player.previousVideo();}
-function togglePlay(){if(!ready) return; let state=player.getPlayerState(); state==1?player.pauseVideo():player.playVideo();}
+function nextVideo(){
+  if(ready){
+    player.nextVideo();
+    currentVideoIndex = (currentVideoIndex+1)%playlistIds.length;
+  }
+}
+
+function prevVideo(){
+  if(ready){
+    player.previousVideo();
+    currentVideoIndex = (currentVideoIndex-1+playlistIds.length)%playlistIds.length;
+  }
+}
+
+function togglePlay(){
+  if(!ready) return; 
+  let state=player.getPlayerState(); 
+  state==1?player.pauseVideo():player.playVideo();
+}
 
 // MediaSession for lock screen
 function updateMediaSession(title){
   if('mediaSession' in navigator){
-    navigator.mediaSession.metadata = new MediaMetadata({title:title,artist:'YouTube',artwork:[{src:'https://i.imgur.com/8Km9tLL.png',sizes:'512x512',type:'image/png'}]});
+    navigator.mediaSession.metadata = new MediaMetadata({
+      title:title,
+      artist:'YouTube',
+      artwork:[{src:'https://i.imgur.com/8Km9tLL.png',sizes:'512x512',type:'image/png'}]
+    });
     navigator.mediaSession.setActionHandler('play',()=>player.playVideo());
     navigator.mediaSession.setActionHandler('pause',()=>player.pauseVideo());
-    navigator.mediaSession.setActionHandler('nexttrack',()=>player.nextVideo());
-    navigator.mediaSession.setActionHandler('previoustrack',()=>player.previousVideo());
+    navigator.mediaSession.setActionHandler('nexttrack',()=>nextVideo());
+    navigator.mediaSession.setActionHandler('previoustrack',()=>prevVideo());
   }
 }
 
