@@ -125,7 +125,7 @@ header{
     <span></span><span></span><span></span><span></span><span></span>
   </div>
   
-  <!-- Search box visible here -->
+  <!-- Search box -->
   <div class="searchBox">
     <input type="text" id="searchInput" placeholder="Search YouTube...">
     <button onclick="searchVideo()">Search</button>
@@ -211,7 +211,11 @@ function searchVideo(){
       let div=document.createElement("div");
       div.className="videoCard";
       div.innerHTML=`<img src="${thumb}"><p>${title}</p>`;
-      div.onclick=()=>{player.loadVideoById(id);};
+      div.onclick=function(){
+        if(!id) return alert("Video ID not found!");
+        player.loadVideoById({videoId:id, suggestedQuality:'large'});
+        showHome();
+      };
       results.appendChild(div);
     });
   })
