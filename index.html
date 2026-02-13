@@ -168,9 +168,10 @@ function searchVideo(){
   });
 }
 
-function playSearchedVideo(id){
+function playSearchedVideo(id,title){
   showHome();
   player.loadVideoById(id);
+  saveHistory(title,id);
 }
 
 function nextVideo(){ if(ready) player.nextVideo(); }
