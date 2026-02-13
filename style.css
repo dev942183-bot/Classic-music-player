@@ -104,7 +104,38 @@
   color: white;
   animation: floatCard 4s ease-in-out infinite;
 }
+  .videoCard{
+  background:#1e1e1e;
+  border-radius:12px;
+  margin:10px 0;
+  overflow:hidden;
+  cursor:pointer;
+}
 
+.videoCard img{
+  width:100%;
+  border-bottom:1px solid #333;
+}
+
+.videoInfo{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:8px;
+}
+
+.videoInfo p{
+  font-size:14px;
+  flex:1;
+  margin:0;
+}
+
+.videoInfo button{
+  background:none;
+  border:none;
+  font-size:18px;
+  cursor:pointer;
+}
 /* Floating card animation */
 @keyframes floatCard {
   0% { transform: translateY(0px); }
