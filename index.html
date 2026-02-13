@@ -152,18 +152,30 @@ function searchVideo(){
   let query=document.getElementById("searchInput").value;
   if(!query) return;
 
-  fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=5&q=${query}&key=${API_KEY}`)
+  fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=6&q=${query}&key=${API_KEY}`)
   .then(res=>res.json())
   .then(data=>{
     let results=document.getElementById("searchResults");
     results.innerHTML="";
+
     data.items.forEach(item=>{
       let videoId=item.id.videoId;
       let title=item.snippet.title;
-      let p=document.createElement("p");
-      p.innerText=title;
-      p.onclick=()=>playSearchedVideo(videoId);
-      results.appendChild(p);
+      let thumbnail=item.snippet.thumbnails.medium.url;
+
+      let card=document.createElement("div");
+      card.className="videoCard";
+
+      card.innerHTML=`
+        <img src="${thumbnail}">
+        <div class="videoInfo">
+          <p>${title}</p>
+          <button onclick="addFavorite('${videoId}','${title}')">❤️</button>
+        </div>
+      `;
+
+      card.onclick=()=>playSearchedVideo(videoId,title);
+      results.appendChild(card);
     });
   });
 }
