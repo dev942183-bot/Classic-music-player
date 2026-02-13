@@ -86,6 +86,27 @@ header{
 }
 
 #searchSection,#historySection{display:none;}
+.searchBox{
+  margin:20px 0;
+}
+.searchBox input{
+  width:70%;
+  padding:8px;
+  border-radius:12px;
+  border:none;
+}
+.searchBox button{
+  padding:8px 12px;
+  margin-left:5px;
+  border:none;
+  border-radius:12px;
+  background:#1565C0;
+  color:white;
+  cursor:pointer;
+}
+.searchBox button:hover{
+  background:#1C7ED6;
+}
 </style>
 </head>
 <body>
@@ -103,11 +124,13 @@ header{
   <div class="equalizer">
     <span></span><span></span><span></span><span></span><span></span>
   </div>
-</div>
-
-<div class="card" id="searchSection">
-  <input type="text" id="searchInput" placeholder="Search YouTube..." style="width:80%;padding:8px;border-radius:12px;border:none;">
-  <button onclick="searchVideo()">Search</button>
+  
+  <!-- Search box visible here -->
+  <div class="searchBox">
+    <input type="text" id="searchInput" placeholder="Search YouTube...">
+    <button onclick="searchVideo()">Search</button>
+  </div>
+  
   <div id="searchResults"></div>
 </div>
 
@@ -154,7 +177,7 @@ function togglePlay(){
   state==1?player.pauseVideo():player.playVideo();
 }
 
-// MediaSession for lock screen
+// MediaSession
 function updateMediaSession(title){
   if('mediaSession' in navigator){
     navigator.mediaSession.metadata = new MediaMetadata({
@@ -188,7 +211,7 @@ function searchVideo(){
       let div=document.createElement("div");
       div.className="videoCard";
       div.innerHTML=`<img src="${thumb}"><p>${title}</p>`;
-      div.onclick=()=>{player.loadVideoById(id);showHome();}
+      div.onclick=()=>{player.loadVideoById(id);};
       results.appendChild(div);
     });
   })
@@ -215,7 +238,7 @@ function showHistory(){
 }
 
 // Navigation
-function hideAll(){homeSection.style.display="none";searchSection.style.display="none";historySection.style.display="none";}
+function hideAll(){homeSection.style.display="none";historySection.style.display="none";}
 function showHome(){hideAll();homeSection.style.display="block";}
 function goBack(){showHome();}
 </script>
