@@ -177,9 +177,9 @@ function nextVideo(){ if(ready) player.nextVideo(); }
 function prevVideo(){ if(ready) player.previousVideo(); }
 
 /* History */
-function saveHistory(title){
+function saveHistory(title,id){
   let history=JSON.parse(localStorage.getItem("musicHistory"))||[];
-  history.unshift(title);
+  history.unshift({title,id});
   localStorage.setItem("musicHistory",JSON.stringify(history));
 }
 
