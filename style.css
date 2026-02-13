@@ -10,7 +10,12 @@
   align-items: center;
   height: 100vh;
 }
-
+   #songTitle {
+  margin-bottom: 15px;
+  font-size: 15px;
+  opacity: 0.8;
+  min-height: 20px;
+}
 /* Background animation */
 @keyframes gradientMove {
   0% { background-position: 0% 50%; }
