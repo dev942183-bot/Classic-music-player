@@ -4,8 +4,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Dev Music Player</title>
 <link rel="stylesheet" href="style.css">
-
-const API_KEY =“AIzaSyAfJIHop06R94612CGPmMiTByy5hUarL1M";
 </head>
 
 <body>
@@ -18,45 +16,63 @@ const API_KEY =“AIzaSyAfJIHop06R94612CGPmMiTByy5hUarL1M";
 
 <!-- Main App -->
 <div id="mainApp" style="display:none;">
+
 <div class="nav">
   <button onclick="showHome()">Home</button>
   <button onclick="showSearch()">Search</button>
   <button onclick="showHistory()">History</button>
 </div>
+
 <div class="card">
-  <h1>🎵 Dev Music Player</h1>
 
-  <div id="songTitle">No song playing</div>
+  <!-- HOME SECTION -->
+  <div id="homeSection">
+    <h1>🎵 Dev Music Player</h1>
+    <div id="songTitle">No song playing</div>
 
-  <input type="text" id="link" placeholder="Paste YouTube Playlist Link Only">
-  <button id="loadBtn">Load Playlist</button>
+    <input type="text" id="link" placeholder="Paste YouTube Playlist Link Only">
+    <button id="loadBtn">Load Playlist</button>
 
-  <div class="controls">
-    <button onclick="prevVideo()">⏮ Prev</button>
-    <button onclick="nextVideo()">⏭ Next</button>
+    <div class="controls">
+      <button onclick="prevVideo()">⏮ Prev</button>
+      <button onclick="nextVideo()">⏭ Next</button>
+    </div>
+
+    <div class="equalizer">
+      <span></span><span></span><span></span><span></span><span></span>
+    </div>
+
+    <div id="player"></div>
   </div>
 
-  <div class="equalizer">
-    <span></span>
-    <span></span>
-    <span></span>
-    <span></span>
-    <span></span>
+  <!-- SEARCH SECTION -->
+  <div id="searchSection" style="display:none;">
+    <input type="text" id="searchInput" placeholder="Search YouTube...">
+    <button onclick="searchVideo()">Search</button>
+    <div id="searchResults"></div>
   </div>
 
-  <div id="player"></div>
+  <!-- HISTORY SECTION -->
+  <div id="historySection" style="display:none;">
+    <h3>Play History</h3>
+    <ul id="historyList"></ul>
+  </div>
+
 </div>
-
 </div>
 
 <script src="https://www.youtube.com/iframe_api"></script>
 
 <script>
+
+/* 🔴 API KEY ekhane boshabe */
+const API_KEY = "AIzaSyAfJIHop06R94612CGPmMiTByy5hUarL1M";
+
 let player;
 let ready = false;
 let titleInterval;
 
-/* Splash hide after 3 sec */
+/* Splash */
 window.onload = function() {
   setTimeout(() => {
     document.getElementById("splash").style.display = "none";
@@ -64,18 +80,34 @@ window.onload = function() {
   }, 3000);
 };
 
+/* Navigation */
+function showHome(){
+  homeSection.style.display="block";
+  searchSection.style.display="none";
+  historySection.style.display="none";
+}
+
+function showSearch(){
+  homeSection.style.display="none";
+  searchSection.style.display="block";
+  historySection.style.display="none";
+}
+
+function showHistory(){
+  homeSection.style.display="none";
+  searchSection.style.display="none";
+  historySection.style.display="block";
+  loadHistory();
+}
+
+/* YouTube Player */
 function onYouTubeIframeAPIReady() {
   player = new YT.Player('player', {
     height: '250',
     width: '100%',
-    playerVars: {
-      rel: 0,
-      modestbranding: 1
-    },
+    playerVars: { rel: 0, modestbranding: 1 },
     events: {
-      'onReady': function() {
-        ready = true;
-      },
+      'onReady': () => ready = true,
       'onStateChange': onPlayerStateChange
     }
   });
@@ -84,44 +116,77 @@ function onYouTubeIframeAPIReady() {
 function onPlayerStateChange(event) {
   if (event.data == YT.PlayerState.PLAYING) {
     clearInterval(titleInterval);
-
     titleInterval = setInterval(() => {
       let title = player.getVideoData().title;
       if (title) {
         document.getElementById("songTitle").innerText = title;
+        saveHistory(title);
       }
     }, 1000);
   }
 }
 
-document.getElementById("loadBtn").addEventListener("click", function() {
-
-  if (!ready) {
-    alert("Wait 5 seconds...");
-    return;
-  }
-
-  let url = document.getElementById("link").value.trim();
-
-  if (url.includes("list=")) {
-    let playlistId = url.split("list=")[1].split("&")[0];
-    player.loadPlaylist({
-      list: playlistId,
-      listType: 'playlist'
-    });
-  } else {
-    alert("Please paste a Playlist link only!");
-  }
-
+/* Playlist Load */
+document.addEventListener("DOMContentLoaded", () => {
+  document.getElementById("loadBtn").addEventListener("click", function() {
+    if (!ready) return alert("Wait 5 seconds...");
+    let url = document.getElementById("link").value.trim();
+    if (url.includes("list=")) {
+      let playlistId = url.split("list=")[1].split("&")[0];
+      player.loadPlaylist({ list: playlistId, listType: 'playlist' });
+    } else {
+      alert("Paste Playlist link only!");
+    }
+  });
 });
 
-function nextVideo() {
-  if (ready) player.nextVideo();
+/* Search */
+function searchVideo(){
+  let query=document.getElementById("searchInput").value;
+  if(!query) return;
+
+  fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=5&q=${query}&key=${API_KEY}`)
+  .then(res=>res.json())
+  .then(data=>{
+    let results=document.getElementById("searchResults");
+    results.innerHTML="";
+    data.items.forEach(item=>{
+      let videoId=item.id.videoId;
+      let title=item.snippet.title;
+      let p=document.createElement("p");
+      p.innerText=title;
+      p.onclick=()=>playSearchedVideo(videoId);
+      results.appendChild(p);
+    });
+  });
 }
 
-function prevVideo() {
-  if (ready) player.previousVideo();
+function playSearchedVideo(id){
+  showHome();
+  player.loadVideoById(id);
 }
+
+function nextVideo(){ if(ready) player.nextVideo(); }
+function prevVideo(){ if(ready) player.previousVideo(); }
+
+/* History */
+function saveHistory(title){
+  let history=JSON.parse(localStorage.getItem("musicHistory"))||[];
+  history.unshift(title);
+  localStorage.setItem("musicHistory",JSON.stringify(history));
+}
+
+function loadHistory(){
+  let history=JSON.parse(localStorage.getItem("musicHistory"))||[];
+  let list=document.getElementById("historyList");
+  list.innerHTML="";
+  history.forEach(item=>{
+    let li=document.createElement("li");
+    li.innerText=item;
+    list.appendChild(li);
+  });
+}
+
 </script>
 
 </body>
