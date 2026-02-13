@@ -13,8 +13,13 @@
 
   <div id="songTitle">No song playing</div>
 
-  <input type="text" id="link" placeholder="Paste YouTube Link">
-  <button id="playBtn">▶ Play</button>
+  <input type="text" id="link" placeholder="Paste YouTube Playlist Link Only">
+  <button id="loadBtn">Load Playlist</button>
+
+  <div class="controls">
+    <button onclick="prevVideo()">⏮ Prev</button>
+    <button onclick="nextVideo()">⏭ Next</button>
+  </div>
 
   <div id="player"></div>
 </div>
@@ -30,6 +35,10 @@ function onYouTubeIframeAPIReady() {
   player = new YT.Player('player', {
     height: '250',
     width: '100%',
+    playerVars: {
+      rel: 0,
+      modestbranding: 1
+    },
     events: {
       'onReady': function() {
         ready = true;
@@ -44,20 +53,18 @@ function onPlayerStateChange(event) {
     clearInterval(titleInterval);
 
     titleInterval = setInterval(() => {
-      try {
-        let title = player.getVideoData().title;
-        if (title) {
-          document.getElementById("songTitle").innerText = title;
-        }
-      } catch(e) {}
+      let title = player.getVideoData().title;
+      if (title) {
+        document.getElementById("songTitle").innerText = title;
+      }
     }, 1000);
   }
 }
 
-document.getElementById("playBtn").addEventListener("click", function() {
+document.getElementById("loadBtn").addEventListener("click", function() {
 
   if (!ready) {
-    alert("Player loading... wait 5 seconds");
+    alert("Wait 5 seconds...");
     return;
   }
 
@@ -65,21 +72,23 @@ document.getElementById("playBtn").addEventListener("click", function() {
 
   if (url.includes("list=")) {
     let playlistId = url.split("list=")[1].split("&")[0];
-    player.loadPlaylist(playlistId);
-  } 
-  else if (url.includes("youtu.be/")) {
-    let videoId = url.split("youtu.be/")[1].split("?")[0];
-    player.loadVideoById(videoId);
-  } 
-  else if (url.includes("watch?v=")) {
-    let videoId = url.split("v=")[1].split("&")[0];
-    player.loadVideoById(videoId);
-  } 
-  else {
-    alert("Invalid YouTube Link");
+    player.loadPlaylist({
+      list: playlistId,
+      listType: 'playlist'
+    });
+  } else {
+    alert("Please paste a Playlist link only!");
   }
 
 });
+
+function nextVideo() {
+  if (ready) player.nextVideo();
+}
+
+function prevVideo() {
+  if (ready) player.previousVideo();
+}
 </script>
 
 </body>
