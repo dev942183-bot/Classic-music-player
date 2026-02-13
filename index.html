@@ -2,21 +2,89 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dev YouTube Music Player Blue</title>
+<title>Dev YouTube Player Blue</title>
 <style>
-body{margin:0;font-family:Arial,sans-serif;background:#1E90FF;color:white;text-align:center;}
-header{padding:15px;font-size:24px;font-weight:bold;background:#0b65c2;}
-.nav{display:flex;justify-content:space-between;background:#0b65c2;padding:10px;}
-.nav button{padding:8px 15px;border:none;border-radius:12px;background:#1565C0;color:white;cursor:pointer;}
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#1E90FF;
+  color:white;
+  text-align:center;
+}
+header{
+  padding:15px;
+  font-size:24px;
+  font-weight:bold;
+  background:#0b65c2;
+}
+.nav{
+  display:flex;
+  justify-content:space-between;
+  background:#0b65c2;
+  padding:10px;
+}
+.nav button{
+  padding:8px 15px;
+  border:none;
+  border-radius:12px;
+  background:#1565C0;
+  color:white;
+  cursor:pointer;
+}
 .nav button:hover{background:#1C7ED6;}
 .card{padding:15px;}
 #songTitle{margin:10px;font-weight:600;font-size:18px;}
 #player{margin-top:10px;width:100%;height:250px;}
-.videoCard{background:#1565C0;margin:10px 0;padding:10px;border-radius:12px;cursor:pointer;transition:.3s;}
+.videoCard{
+  background:#1565C0;
+  margin:10px 0;
+  padding:10px;
+  border-radius:12px;
+  cursor:pointer;
+  transition:.3s;
+}
 .videoCard:hover{background:#1C7ED6;}
 .videoCard img{width:100%;border-radius:8px;}
-.bottomBar{position:fixed;bottom:0;width:100%;background:#0b65c2;display:flex;justify-content:space-around;padding:12px;}
-.bottomBar button{background:none;border:none;color:white;font-size:24px;cursor:pointer;}
+.bottomBar{
+  position:fixed;
+  bottom:0;
+  width:100%;
+  background:#0b65c2;
+  display:flex;
+  justify-content:space-around;
+  padding:12px;
+}
+.bottomBar button{
+  background:none;
+  border:none;
+  color:white;
+  font-size:24px;
+  cursor:pointer;
+}
+
+/* Equalizer animation */
+.equalizer{
+  display:flex;
+  justify-content:center;
+  margin:20px 0;
+}
+.equalizer span{
+  display:inline-block;
+  width:6px;
+  height:20px;
+  background:#fff;
+  margin:0 3px;
+  animation:bounce 1s infinite ease-in-out;
+}
+.equalizer span:nth-child(2){animation-delay:0.2s;}
+.equalizer span:nth-child(3){animation-delay:0.4s;}
+.equalizer span:nth-child(4){animation-delay:0.6s;}
+.equalizer span:nth-child(5){animation-delay:0.8s;}
+@keyframes bounce{
+  0%,100%{height:20px;}
+  50%{height:50px;}
+}
+
 #searchSection,#historySection{display:none;}
 </style>
 </head>
@@ -32,6 +100,9 @@ header{padding:15px;font-size:24px;font-weight:bold;background:#0b65c2;}
 <div class="card" id="homeSection">
   <div id="songTitle">No song playing</div>
   <div id="player"></div>
+  <div class="equalizer">
+    <span></span><span></span><span></span><span></span><span></span>
+  </div>
 </div>
 
 <div class="card" id="searchSection">
@@ -59,7 +130,7 @@ function onYouTubeIframeAPIReady(){
   player = new YT.Player('player',{
     height:'250',
     width:'100%',
-    playerVars:{rel:0,modestbranding:1,volume:100},
+    playerVars:{rel:0,modestbranding:1},
     events:{
       'onReady':()=>{ready=true;player.setVolume(100);},
       'onStateChange':onPlayerStateChange
@@ -83,7 +154,7 @@ function togglePlay(){
   state==1?player.pauseVideo():player.playVideo();
 }
 
-// MediaSession metadata
+// MediaSession for lock screen
 function updateMediaSession(title){
   if('mediaSession' in navigator){
     navigator.mediaSession.metadata = new MediaMetadata({
@@ -101,12 +172,17 @@ function updateMediaSession(title){
 // Search YouTube
 const API_KEY = "AIzaSyAfJIHop06R94612CGPmMiTByy5hUarL1M";
 function searchVideo(){
-  let q = document.getElementById("searchInput").value;
-  if(!q) return;
-  fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=6&q=${q}&key=${API_KEY}`)
-  .then(res=>res.json()).then(data=>{
+  let q = document.getElementById("searchInput").value.trim();
+  if(!q) return alert("Please type song name!");
+  fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=6&q=${encodeURIComponent(q)}&key=${API_KEY}`)
+  .then(res => res.json())
+  .then(data => {
     let results = document.getElementById("searchResults");
-    results.innerHTML="";
+    results.innerHTML = "";
+    if(!data.items || data.items.length==0){
+      results.innerHTML = "<p>No results found</p>";
+      return;
+    }
     data.items.forEach(item=>{
       let id=item.id.videoId,title=item.snippet.title,thumb=item.snippet.thumbnails.medium.url;
       let div=document.createElement("div");
@@ -115,7 +191,8 @@ function searchVideo(){
       div.onclick=()=>{player.loadVideoById(id);showHome();}
       results.appendChild(div);
     });
-  });
+  })
+  .catch(err=>alert("Error fetching YouTube API: "+err));
 }
 
 // History
@@ -142,11 +219,6 @@ function hideAll(){homeSection.style.display="none";searchSection.style.display=
 function showHome(){hideAll();homeSection.style.display="block";}
 function goBack(){showHome();}
 </script>
-
-<div style="margin:20px;">
-  <input type="text" id="searchInputBottom" placeholder="Search YouTube..." style="width:80%;padding:8px;border-radius:12px;border:none;">
-  <button onclick="searchVideo()">Search</button>
-</div>
 
 </body>
 </html>
