@@ -1,12 +1,21 @@
-body {
+ body {
   margin: 0;
   padding: 0;
-  background: linear-gradient(135deg, #1e1e2f, #121212);
+  background: linear-gradient(-45deg, #1e1e2f, #121212, #1a1a40, #000000);
+  background-size: 400% 400%;
+  animation: gradientMove 10s ease infinite;
   font-family: Arial, sans-serif;
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
+}
+
+/* Background animation */
+@keyframes gradientMove {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
 .card {
@@ -15,9 +24,17 @@ body {
   width: 90%;
   max-width: 400px;
   border-radius: 20px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+  box-shadow: 0 10px 40px rgba(0,0,0,0.7);
   text-align: center;
   color: white;
+  animation: floatCard 4s ease-in-out infinite;
+}
+
+/* Floating card animation */
+@keyframes floatCard {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+  100% { transform: translateY(0px); }
 }
 
 h1 {
@@ -38,7 +55,7 @@ button {
   padding: 12px;
   border-radius: 10px;
   border: none;
-  background: #ff3c3c;
+  background: linear-gradient(45deg, #ff3c3c, #ff0000);
   color: white;
   font-size: 16px;
   font-weight: bold;
@@ -46,8 +63,15 @@ button {
   transition: 0.3s;
 }
 
+/* Button hover effect */
 button:hover {
-  background: #ff0000;
+  transform: scale(1.05);
+  box-shadow: 0 5px 20px rgba(255,0,0,0.6);
+}
+
+/* Button click effect */
+button:active {
+  transform: scale(0.95);
 }
 
 #player {
