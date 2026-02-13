@@ -3,12 +3,69 @@
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Dev Music Player</title>
-<link rel="stylesheet" href="style.css">
+
+<style>
+body{
+  margin:0;
+  font-family:Arial, sans-serif;
+  background:linear-gradient(135deg,#0f0c29,#302b63,#24243e);
+  color:white;
+  text-align:center;
+}
+
+#splash{
+  height:100vh;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+}
+
+.nav{
+  display:flex;
+  justify-content:space-around;
+  background:#111;
+  padding:10px;
+}
+
+button{
+  padding:8px 12px;
+  border:none;
+  border-radius:6px;
+  cursor:pointer;
+}
+
+.card{
+  padding:15px;
+}
+
+#player{
+  margin-top:15px;
+}
+
+.videoCard{
+  background:#1e1e1e;
+  border-radius:10px;
+  margin:10px;
+  padding:10px;
+  cursor:pointer;
+}
+
+.videoCard img{
+  width:100%;
+  border-radius:8px;
+}
+
+#searchSection,
+#historySection{
+  display:none;
+}
+</style>
 </head>
 
 <body>
 
-<!-- Splash Screen -->
+<!-- Splash -->
 <div id="splash">
   <h1>🎵 Dev Music Player</h1>
   <p>Loading Music...</p>
@@ -23,131 +80,82 @@
   <button onclick="showHistory()">History</button>
 </div>
 
-<div class="card">
-
-  <!-- HOME SECTION -->
-  <div id="homeSection">
-    <h1>🎵 Dev Music Player</h1>
-    <div id="songTitle">No song playing</div>
-
-    <input type="text" id="link" placeholder="Paste YouTube Playlist Link Only">
-    <button id="loadBtn">Load Playlist</button>
-
-    <div class="controls">
-      <button onclick="prevVideo()">⏮ Prev</button>
-      <button onclick="nextVideo()">⏭ Next</button>
-    </div>
-
-    <div class="equalizer">
-      <span></span><span></span><span></span><span></span><span></span>
-    </div>
-
-    <div id="player"></div>
-  </div>
-
-  <!-- SEARCH SECTION -->
-  <div id="searchSection" style="display:none;">
-    <input type="text" id="searchInput" placeholder="Search YouTube...">
-    <button onclick="searchVideo()">Search</button>
-    <div id="searchResults"></div>
-  </div>
-
-  <!-- HISTORY SECTION -->
-  <div id="historySection" style="display:none;">
-    <h3>Play History</h3>
-    <ul id="historyList"></ul>
-  </div>
-
+<div class="card" id="homeSection">
+  <h2 id="songTitle">No song playing</h2>
+  <div id="player"></div>
 </div>
+
+<div class="card" id="searchSection">
+  <input type="text" id="searchInput" placeholder="Search song...">
+  <button onclick="searchVideo()">Search</button>
+  <div id="searchResults"></div>
+</div>
+
+<div class="card" id="historySection">
+  <h3>History</h3>
+  <ul id="historyList"></ul>
+</div>
+
 </div>
 
 <script src="https://www.youtube.com/iframe_api"></script>
 
 <script>
 
-/* 🔴 API KEY ekhane boshabe */
+// 🔑 YOUR API KEY
 const API_KEY = "AIzaSyAfJIHop06R94612CGPmMiTByy5hUarL1M";
 
 let player;
-let ready = false;
-let titleInterval;
+let ready=false;
 
-/* Splash */
-window.onload = function() {
-  setTimeout(() => {
-    document.getElementById("splash").style.display = "none";
-    document.getElementById("mainApp").style.display = "block";
-  }, 3000);
-};
+// Splash hide
+document.addEventListener("DOMContentLoaded", function(){
+  setTimeout(()=>{
+    document.getElementById("splash").style.display="none";
+    document.getElementById("mainApp").style.display="block";
+  },2000);
+});
 
-/* Navigation */
+// YouTube Player
+function onYouTubeIframeAPIReady(){
+  player=new YT.Player("player",{
+    height:"250",
+    width:"100%",
+    events:{
+      'onReady':function(){
+        ready=true;
+      },
+      'onStateChange':function(event){
+        if(event.data==YT.PlayerState.PLAYING){
+          let title=player.getVideoData().title;
+          document.getElementById("songTitle").innerText=title;
+        }
+      }
+    }
+  });
+}
+
+// Navigation
 function showHome(){
-  homeSection.style.display="block";
-  searchSection.style.display="none";
-  historySection.style.display="none";
+  document.getElementById("homeSection").style.display="block";
+  document.getElementById("searchSection").style.display="none";
+  document.getElementById("historySection").style.display="none";
 }
 
 function showSearch(){
-  homeSection.style.display="none";
-  searchSection.style.display="block";
-  historySection.style.display="none";
+  document.getElementById("homeSection").style.display="none";
+  document.getElementById("searchSection").style.display="block";
+  document.getElementById("historySection").style.display="none";
 }
 
 function showHistory(){
-  homeSection.style.display="none";
-  searchSection.style.display="none";
-  historySection.style.display="block";
+  document.getElementById("homeSection").style.display="none";
+  document.getElementById("searchSection").style.display="none";
+  document.getElementById("historySection").style.display="block";
   loadHistory();
-} 
-
-function addFavorite(id,title){
-  let fav=JSON.parse(localStorage.getItem("favorites"))||[];
-  fav.unshift({title,id});
-  localStorage.setItem("favorites",JSON.stringify(fav));
-  alert("Added to Favorites ❤️");
 }
 
-/* YouTube Player */
-function onYouTubeIframeAPIReady() {
-  player = new YT.Player('player', {
-    height: '250',
-    width: '100%',
-    playerVars: { rel: 0, modestbranding: 1 },
-    events: {
-      'onReady': () => ready = true,
-      'onStateChange': onPlayerStateChange
-    }
-  });
-}
-
-function onPlayerStateChange(event) {
-  if (event.data == YT.PlayerState.PLAYING) {
-    clearInterval(titleInterval);
-    titleInterval = setInterval(() => {
-      let title = player.getVideoData().title;
-      if (title) {
-        document.getElementById("songTitle").innerText = title;
-        saveHistory(title);
-      }
-    }, 1000);
-  }
-}
-
-/* Playlist Load */
-document.addEventListener("DOMContentLoaded", () => {
-  document.getElementById("loadBtn").addEventListener("click", function() {
-    if (!ready) return alert("Wait 5 seconds...");
-    let url = document.getElementById("link").value.trim();
-    if (url.includes("list=")) {
-      let playlistId = url.split("list=")[1].split("&")[0];
-      player.loadPlaylist({ list: playlistId, listType: 'playlist' });
-    } else {
-      alert("Paste Playlist link only!");
-    }
-  });
-});
-
-/* Search */
+// Search Function
 function searchVideo(){
   let query=document.getElementById("searchInput").value;
   if(!query) return;
@@ -163,33 +171,30 @@ function searchVideo(){
       let title=item.snippet.title;
       let thumbnail=item.snippet.thumbnails.medium.url;
 
-      let card=document.createElement("div");
-      card.className="videoCard";
-
-      card.innerHTML=`
+      let div=document.createElement("div");
+      div.className="videoCard";
+      div.innerHTML=`
         <img src="${thumbnail}">
-        <div class="videoInfo">
-          <p>${title}</p>
-          <button onclick="addFavorite('${videoId}','${title}')">❤️</button>
-        </div>
+        <p>${title}</p>
       `;
 
-      card.onclick=()=>playSearchedVideo(videoId,title);
-      results.appendChild(card);
+      div.onclick=function(){
+        playVideo(videoId,title);
+      };
+
+      results.appendChild(div);
     });
   });
 }
 
-function playSearchedVideo(id,title){
+// Play Video
+function playVideo(id,title){
   showHome();
   player.loadVideoById(id);
   saveHistory(title,id);
 }
 
-function nextVideo(){ if(ready) player.nextVideo(); }
-function prevVideo(){ if(ready) player.previousVideo(); }
-
-/* History */
+// History
 function saveHistory(title,id){
   let history=JSON.parse(localStorage.getItem("musicHistory"))||[];
   history.unshift({title,id});
@@ -204,15 +209,11 @@ function loadHistory(){
   history.forEach(item=>{
     let li=document.createElement("li");
     li.innerText=item.title;
-    li.onclick=()=>playFromHistory(item.id,item.title);
+    li.onclick=function(){
+      playVideo(item.id,item.title);
+    };
     list.appendChild(li);
   });
-}
-
-function playFromHistory(id,title){
-  showHome();
-  player.loadVideoById(id);
-}
 }
 
 </script>
