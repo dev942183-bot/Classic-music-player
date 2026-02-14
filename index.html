@@ -10,6 +10,7 @@ body{
   background:#1E90FF;
   color:white;
   text-align:center;
+  overflow-x:hidden;
 }
 
 /* Splash Screen */
@@ -27,10 +28,21 @@ body{
 }
 #splash h1{font-size:32px;margin-bottom:10px;}
 #splash p{font-size:18px;}
-
-/* fadeout animation */
 @keyframes fadeOut{
   to{opacity:0;visibility:hidden;}
+}
+
+/* Animated blurred background */
+#backgroundBlur{
+  position:fixed;top:0;left:0;width:100%;height:100%;
+  background:linear-gradient(120deg,#1E90FF,#0b65c2);
+  filter:blur(60px);
+  z-index:-1;
+  animation:shift 10s infinite alternate;
+}
+@keyframes shift{
+  0%{background-position:0% 50%;}
+  100%{background-position:100% 50%;}
 }
 
 header{
@@ -112,7 +124,7 @@ header{
   margin:20px 0;
 }
 .searchBox input{
-  width:70%;
+  width:60%;
   padding:8px;
   border-radius:12px;
   border:none;
@@ -129,9 +141,29 @@ header{
 .searchBox button:hover{
   background:#1C7ED6;
 }
+.voiceBtn{
+  padding:8px 12px;
+  margin-left:5px;
+  border:none;
+  border-radius:12px;
+  background:#FF4500;
+  color:white;
+  cursor:pointer;
+}
+.voiceBtn:hover{background:#FF6347;}
+#albumArt{
+  margin:20px auto;
+  width:150px;height:150px;
+  border-radius:50%;
+  border:3px solid white;
+  transition: transform 0.5s linear;
+}
 </style>
 </head>
 <body>
+
+<!-- Background Blur -->
+<div id="backgroundBlur"></div>
 
 <!-- Splash Screen -->
 <div id="splash">
@@ -148,15 +180,17 @@ header{
 
 <div class="card" id="homeSection">
   <div id="songTitle">No song playing</div>
+  <img id="albumArt" src="https://i.imgur.com/8Km9tLL.png">
   <div id="player"></div>
   <div class="equalizer">
     <span></span><span></span><span></span><span></span><span></span>
   </div>
   
-  <!-- Search box -->
+  <!-- Search box + voice -->
   <div class="searchBox">
     <input type="text" id="searchInput" placeholder="Search YouTube...">
     <button onclick="searchVideo()">Search</button>
+    <button class="voiceBtn" onclick="voiceSearch()">🎤</button>
   </div>
   
   <div id="searchResults"></div>
@@ -176,12 +210,12 @@ header{
 <script src="https://www.youtube.com/iframe_api"></script>
 <script>
 let player, ready=false;
+let playlist=[]; 
+let currentIndex=-1;
 
-/* Hide splash screen after 3 sec */
+/* Splash hide after 3 sec */
 window.onload = function(){
-  setTimeout(()=>{
-    document.getElementById("splash").style.display="none";
-  }, 3000);
+  setTimeout(()=>{ document.getElementById("splash").style.display="none"; },3000);
 };
 
 function onYouTubeIframeAPIReady(){
@@ -189,23 +223,37 @@ function onYouTubeIframeAPIReady(){
     height:'250',
     width:'100%',
     playerVars:{rel:0,modestbranding:1},
-    events:{
-      'onReady':()=>{ready=true;player.setVolume(100);},
-      'onStateChange':onPlayerStateChange
-    }
+    events:{'onReady':()=>{ready=true;player.setVolume(100);}, 'onStateChange':onPlayerStateChange}
   });
 }
 
 function onPlayerStateChange(event){
   if(event.data == YT.PlayerState.PLAYING){
     document.getElementById("songTitle").innerText = player.getVideoData().title;
+    document.getElementById("albumArt").src = player.getVideoData().video_id ? `https://i.ytimg.com/vi/${player.getVideoData().video_id}/mqdefault.jpg` : 'https://i.imgur.com/8Km9tLL.png';
     updateMediaSession(player.getVideoData().title);
     saveHistory(player.getVideoData().title);
+    rotateAlbumArt();
   }
 }
 
-function nextVideo(){if(ready) player.nextVideo();}
-function prevVideo(){if(ready) player.previousVideo();}
+// Rotate album art
+function rotateAlbumArt(){
+  let art = document.getElementById("albumArt");
+  art.style.transform = "rotate(360deg)";
+  setTimeout(()=>{ art.style.transform="rotate(0deg)"; },5000);
+}
+
+// Playlist controls
+function nextVideo(){ 
+  if(currentIndex+1 < playlist.length){ currentIndex++; loadVideoByIndex(currentIndex); } 
+}
+function prevVideo(){ 
+  if(currentIndex-1 >=0){ currentIndex--; loadVideoByIndex(currentIndex); } 
+}
+function loadVideoByIndex(idx){
+  player.loadVideoById({videoId: playlist[idx].id, suggestedQuality:'large'});
+}
 function togglePlay(){
   if(!ready) return; 
   let state=player.getPlayerState(); 
@@ -222,8 +270,8 @@ function updateMediaSession(title){
     });
     navigator.mediaSession.setActionHandler('play',()=>player.playVideo());
     navigator.mediaSession.setActionHandler('pause',()=>player.pauseVideo());
-    navigator.mediaSession.setActionHandler('nexttrack',()=>player.nextVideo());
-    navigator.mediaSession.setActionHandler('previoustrack',()=>player.previousVideo());
+    navigator.mediaSession.setActionHandler('nexttrack',()=>nextVideo());
+    navigator.mediaSession.setActionHandler('previoustrack',()=>prevVideo());
   }
 }
 
@@ -237,24 +285,35 @@ function searchVideo(){
   .then(data => {
     let results = document.getElementById("searchResults");
     results.innerHTML = "";
-    if(!data.items || data.items.length==0){
-      results.innerHTML = "<p>No results found</p>";
-      return;
-    }
-    data.items.forEach(item=>{
+    playlist = []; currentIndex=-1;
+    if(!data.items || data.items.length==0){ results.innerHTML = "<p>No results found</p>"; return; }
+    data.items.forEach((item,i)=>{
       let id=item.id.videoId,title=item.snippet.title,thumb=item.snippet.thumbnails.medium.url;
+      playlist.push({id,title});
       let div=document.createElement("div");
       div.className="videoCard";
       div.innerHTML=`<img src="${thumb}"><p>${title}</p>`;
-      div.onclick=function(){
-        if(!id) return alert("Video ID not found!");
-        player.loadVideoById({videoId:id, suggestedQuality:'large'});
-        showHome();
-      };
+      div.onclick=function(){ currentIndex=i; loadVideoByIndex(i); showHome(); };
       results.appendChild(div);
     });
   })
   .catch(err=>alert("Error fetching YouTube API: "+err));
+}
+
+// Voice search
+function voiceSearch(){
+  if(!('webkitSpeechRecognition' in window)){
+    alert("Your browser does not support voice search");
+    return;
+  }
+  let recognition = new webkitSpeechRecognition();
+  recognition.lang = 'en-US';
+  recognition.start();
+  recognition.onresult = function(event){
+    let transcript = event.results[0][0].transcript;
+    document.getElementById("searchInput").value = transcript;
+    searchVideo();
+  };
 }
 
 // History
@@ -281,6 +340,5 @@ function hideAll(){homeSection.style.display="none";historySection.style.display
 function showHome(){hideAll();homeSection.style.display="block";}
 function goBack(){showHome();}
 </script>
-
 </body>
 </html>
