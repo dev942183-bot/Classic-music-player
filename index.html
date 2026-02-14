@@ -59,6 +59,10 @@ header{padding:15px; font-size:24px; font-weight:bold; background:#0b65c2;}
 #albumArt{margin:20px auto; width:150px;height:150px; border-radius:50%; border:3px solid white; transition: transform 0.5s linear;}
 #loadMoreBtn{padding:10px 15px; border-radius:12px; background:#1565C0; border:none; color:white; cursor:pointer; margin-top:10px;}
 #loadMoreBtn:hover{background:#1C7ED6;}
+
+/* Volume Control */
+.volumeControl{margin:15px 0;}
+.volumeControl input[type=range]{width:50%;}
 </style>
 </head>
 <body>
@@ -91,6 +95,12 @@ header{padding:15px; font-size:24px; font-weight:bold; background:#0b65c2;}
   
   <div id="searchResults"></div>
   <button id="loadMoreBtn" style="display:none;" onclick="loadMore()">Load More</button>
+
+  <!-- Volume Slider -->
+  <div class="volumeControl">
+    <label>Volume:</label>
+    <input type="range" id="volumeSlider" min="0" max="100" value="100" onchange="setVolume(this.value)">
+  </div>
 </div>
 
 <div class="card" id="historySection">
@@ -142,6 +152,8 @@ function nextVideo(){ if(currentIndex+1<playlist.length){ currentIndex++; loadVi
 function prevVideo(){ if(currentIndex-1>=0){ currentIndex--; loadVideoByIndex(currentIndex); } }
 function loadVideoByIndex(idx){ player.loadVideoById({videoId:playlist[idx].id, suggestedQuality:'large'}); }
 function togglePlay(){ if(!ready)return; let state=player.getPlayerState(); state==1?player.pauseVideo():player.playVideo(); }
+
+function setVolume(value){ if(player && ready) player.setVolume(value); }
 
 function updateMediaSession(title){
   if('mediaSession' in navigator){
