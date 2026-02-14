@@ -5,12 +5,7 @@
 <title>Debraj Pramanik Music Player</title>
 <style>
 body{
-  margin:0;
-  font-family:Arial,sans-serif;
-  background:#1E90FF;
-  color:white;
-  text-align:center;
-  overflow-x:hidden;
+  margin:0; font-family:Arial,sans-serif; background:#1E90FF; color:white; text-align:center; overflow-x:hidden;
 }
 /* Splash Screen */
 #splash{
@@ -30,22 +25,18 @@ body{
 }
 @keyframes shift{0%{background-position:0% 50%;} 100%{background-position:100% 50%;}}
 
-header{
-  padding:15px; font-size:24px; font-weight:bold; background:#0b65c2;
-}
+header{padding:15px; font-size:24px; font-weight:bold; background:#0b65c2;}
 .nav{ display:flex; justify-content:space-between; background:#0b65c2; padding:10px;}
 .nav button{ padding:8px 15px; border:none; border-radius:12px; background:#1565C0; color:white; cursor:pointer;}
 .nav button:hover{background:#1C7ED6;}
 .card{padding:15px;}
 #songTitle{margin:10px;font-weight:600;font-size:18px;}
 #player{margin-top:10px;width:100%;height:250px;}
-.videoCard{
-  background:#1565C0; margin:10px 0; padding:10px; border-radius:12px; cursor:pointer; transition:.3s;
-}
+.videoCard{ background:#1565C0; margin:10px 0; padding:10px; border-radius:12px; cursor:pointer; transition:.3s;}
 .videoCard:hover{background:#1C7ED6;}
 .videoCard img{width:100%;border-radius:8px;}
 .bottomBar{
-  position:fixed; bottom:0; width:100%; background:#0b65c2; display:flex; justify-content:space-around; padding:12px;
+  position:fixed; bottom:0; width:100%; background:#0b65c2; display:flex; justify-content:space-around; padding:12px; display:none;
 }
 .bottomBar button{ background:none; border:none; color:white; font-size:24px; cursor:pointer;}
 
@@ -74,7 +65,6 @@ header{
 
 <div id="backgroundBlur"></div>
 
-<!-- Splash Screen -->
 <div id="splash">
   <h1>DEBRAJ PRAMANIK MUSIC PLAYER</h1>
   <p>Loading...</p>
@@ -117,10 +107,8 @@ header{
 <script src="https://www.youtube.com/iframe_api"></script>
 <script>
 let player, ready=false;
-let playlist=[]; 
-let currentIndex=-1;
-let nextPageToken=null;
-let currentQuery='';
+let playlist=[], currentIndex=-1;
+let nextPageToken=null, currentQuery='';
 
 window.onload=function(){setTimeout(()=>{document.getElementById("splash").style.display="none";},3000);};
 
@@ -133,12 +121,14 @@ function onYouTubeIframeAPIReady(){
 }
 
 function onPlayerStateChange(event){
+  const bottomBar = document.querySelector('.bottomBar');
   if(event.data == YT.PlayerState.PLAYING){
     document.getElementById("songTitle").innerText = player.getVideoData().title;
     document.getElementById("albumArt").src = `https://i.ytimg.com/vi/${player.getVideoData().video_id}/mqdefault.jpg`;
     updateMediaSession(player.getVideoData().title);
     saveHistory(player.getVideoData().title);
     rotateAlbumArt();
+    bottomBar.style.display='flex'; // Show buttons only when song plays
   }
 }
 
@@ -148,8 +138,8 @@ function rotateAlbumArt(){
   setTimeout(()=>{art.style.transform="rotate(0deg)";},5000);
 }
 
-function nextVideo(){ if(currentIndex+1<playlist.length){currentIndex++; loadVideoByIndex(currentIndex); } }
-function prevVideo(){ if(currentIndex-1>=0){currentIndex--; loadVideoByIndex(currentIndex); } }
+function nextVideo(){ if(currentIndex+1<playlist.length){ currentIndex++; loadVideoByIndex(currentIndex); } }
+function prevVideo(){ if(currentIndex-1>=0){ currentIndex--; loadVideoByIndex(currentIndex); } }
 function loadVideoByIndex(idx){ player.loadVideoById({videoId:playlist[idx].id, suggestedQuality:'large'}); }
 function togglePlay(){ if(!ready)return; let state=player.getPlayerState(); state==1?player.pauseVideo():player.playVideo(); }
 
@@ -202,7 +192,6 @@ function voiceSearch(){
   };
 }
 
-// History
 function saveHistory(title){
   let h=JSON.parse(localStorage.getItem("ytHistory")||"[]");
   if(h[0]!==title) h.unshift(title);
@@ -219,8 +208,6 @@ function showHistory(){
     historyList.appendChild(li);
   });
 }
-
-// Navigation
 function hideAll(){homeSection.style.display="none"; historySection.style.display="none";}
 function showHome(){hideAll(); homeSection.style.display="block";}
 function goBack(){showHome();}
