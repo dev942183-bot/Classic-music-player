@@ -12,157 +12,66 @@ body{
   text-align:center;
   overflow-x:hidden;
 }
-
 /* Splash Screen */
 #splash{
-  position:fixed;
-  top:0;left:0;width:100%;height:100%;
-  background:#0b65c2;
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  align-items:center;
-  z-index:1000;
-  animation:fadeOut 0.5s ease-in-out forwards;
-  animation-delay:3s;
+  position:fixed; top:0; left:0; width:100%; height:100%;
+  background:#0b65c2; display:flex; flex-direction:column; justify-content:center; align-items:center; z-index:1000;
+  animation:fadeOut 0.5s ease-in-out forwards; animation-delay:3s;
 }
 #splash h1{font-size:32px;margin-bottom:10px;}
 #splash p{font-size:18px;}
-@keyframes fadeOut{
-  to{opacity:0;visibility:hidden;}
-}
+@keyframes fadeOut{ to{opacity:0;visibility:hidden;} }
 
 /* Animated blurred background */
 #backgroundBlur{
-  position:fixed;top:0;left:0;width:100%;height:100%;
+  position:fixed; top:0; left:0; width:100%; height:100%;
   background:linear-gradient(120deg,#1E90FF,#0b65c2);
-  filter:blur(60px);
-  z-index:-1;
-  animation:shift 10s infinite alternate;
+  filter:blur(60px); z-index:-1; animation:shift 10s infinite alternate;
 }
-@keyframes shift{
-  0%{background-position:0% 50%;}
-  100%{background-position:100% 50%;}
-}
+@keyframes shift{0%{background-position:0% 50%;} 100%{background-position:100% 50%;}}
 
 header{
-  padding:15px;
-  font-size:24px;
-  font-weight:bold;
-  background:#0b65c2;
+  padding:15px; font-size:24px; font-weight:bold; background:#0b65c2;
 }
-.nav{
-  display:flex;
-  justify-content:space-between;
-  background:#0b65c2;
-  padding:10px;
-}
-.nav button{
-  padding:8px 15px;
-  border:none;
-  border-radius:12px;
-  background:#1565C0;
-  color:white;
-  cursor:pointer;
-}
+.nav{ display:flex; justify-content:space-between; background:#0b65c2; padding:10px;}
+.nav button{ padding:8px 15px; border:none; border-radius:12px; background:#1565C0; color:white; cursor:pointer;}
 .nav button:hover{background:#1C7ED6;}
 .card{padding:15px;}
 #songTitle{margin:10px;font-weight:600;font-size:18px;}
 #player{margin-top:10px;width:100%;height:250px;}
 .videoCard{
-  background:#1565C0;
-  margin:10px 0;
-  padding:10px;
-  border-radius:12px;
-  cursor:pointer;
-  transition:.3s;
+  background:#1565C0; margin:10px 0; padding:10px; border-radius:12px; cursor:pointer; transition:.3s;
 }
 .videoCard:hover{background:#1C7ED6;}
 .videoCard img{width:100%;border-radius:8px;}
 .bottomBar{
-  position:fixed;
-  bottom:0;
-  width:100%;
-  background:#0b65c2;
-  display:flex;
-  justify-content:space-around;
-  padding:12px;
+  position:fixed; bottom:0; width:100%; background:#0b65c2; display:flex; justify-content:space-around; padding:12px;
 }
-.bottomBar button{
-  background:none;
-  border:none;
-  color:white;
-  font-size:24px;
-  cursor:pointer;
-}
+.bottomBar button{ background:none; border:none; color:white; font-size:24px; cursor:pointer;}
 
 /* Equalizer animation */
-.equalizer{
-  display:flex;
-  justify-content:center;
-  margin:20px 0;
-}
-.equalizer span{
-  display:inline-block;
-  width:6px;
-  height:20px;
-  background:#fff;
-  margin:0 3px;
-  animation:bounce 1s infinite ease-in-out;
-}
+.equalizer{ display:flex; justify-content:center; margin:20px 0;}
+.equalizer span{ display:inline-block; width:6px; height:20px; background:#fff; margin:0 3px; animation:bounce 1s infinite ease-in-out;}
 .equalizer span:nth-child(2){animation-delay:0.2s;}
 .equalizer span:nth-child(3){animation-delay:0.4s;}
 .equalizer span:nth-child(4){animation-delay:0.6s;}
 .equalizer span:nth-child(5){animation-delay:0.8s;}
-@keyframes bounce{
-  0%,100%{height:20px;}
-  50%{height:50px;}
-}
+@keyframes bounce{ 0%,100%{height:20px;} 50%{height:50px;}}
 
 #searchSection,#historySection{display:none;}
-.searchBox{
-  margin:20px 0;
-}
-.searchBox input{
-  width:60%;
-  padding:8px;
-  border-radius:12px;
-  border:none;
-}
-.searchBox button{
-  padding:8px 12px;
-  margin-left:5px;
-  border:none;
-  border-radius:12px;
-  background:#1565C0;
-  color:white;
-  cursor:pointer;
-}
-.searchBox button:hover{
-  background:#1C7ED6;
-}
-.voiceBtn{
-  padding:8px 12px;
-  margin-left:5px;
-  border:none;
-  border-radius:12px;
-  background:#FF4500;
-  color:white;
-  cursor:pointer;
-}
+.searchBox{margin:20px 0;}
+.searchBox input{width:50%; padding:8px; border-radius:12px; border:none;}
+.searchBox button{padding:8px 12px; margin-left:5px; border:none; border-radius:12px; background:#1565C0; color:white; cursor:pointer;}
+.searchBox button:hover{background:#1C7ED6;}
+.voiceBtn{padding:8px 12px; margin-left:5px; border:none; border-radius:12px; background:#FF4500; color:white; cursor:pointer;}
 .voiceBtn:hover{background:#FF6347;}
-#albumArt{
-  margin:20px auto;
-  width:150px;height:150px;
-  border-radius:50%;
-  border:3px solid white;
-  transition: transform 0.5s linear;
-}
+#albumArt{margin:20px auto; width:150px;height:150px; border-radius:50%; border:3px solid white; transition: transform 0.5s linear;}
+#loadMoreBtn{padding:10px 15px; border-radius:12px; background:#1565C0; border:none; color:white; cursor:pointer; margin-top:10px;}
+#loadMoreBtn:hover{background:#1C7ED6;}
 </style>
 </head>
 <body>
 
-<!-- Background Blur -->
 <div id="backgroundBlur"></div>
 
 <!-- Splash Screen -->
@@ -182,11 +91,8 @@ header{
   <div id="songTitle">No song playing</div>
   <img id="albumArt" src="https://i.imgur.com/8Km9tLL.png">
   <div id="player"></div>
-  <div class="equalizer">
-    <span></span><span></span><span></span><span></span><span></span>
-  </div>
+  <div class="equalizer"><span></span><span></span><span></span><span></span><span></span></div>
   
-  <!-- Search box + voice -->
   <div class="searchBox">
     <input type="text" id="searchInput" placeholder="Search YouTube...">
     <button onclick="searchVideo()">Search</button>
@@ -194,6 +100,7 @@ header{
   </div>
   
   <div id="searchResults"></div>
+  <button id="loadMoreBtn" style="display:none;" onclick="loadMore()">Load More</button>
 </div>
 
 <div class="card" id="historySection">
@@ -212,16 +119,14 @@ header{
 let player, ready=false;
 let playlist=[]; 
 let currentIndex=-1;
+let nextPageToken=null;
+let currentQuery='';
 
-/* Splash hide after 3 sec */
-window.onload = function(){
-  setTimeout(()=>{ document.getElementById("splash").style.display="none"; },3000);
-};
+window.onload=function(){setTimeout(()=>{document.getElementById("splash").style.display="none";},3000);};
 
 function onYouTubeIframeAPIReady(){
   player = new YT.Player('player',{
-    height:'250',
-    width:'100%',
+    height:'250', width:'100%',
     playerVars:{rel:0,modestbranding:1},
     events:{'onReady':()=>{ready=true;player.setVolume(100);}, 'onStateChange':onPlayerStateChange}
   });
@@ -230,44 +135,27 @@ function onYouTubeIframeAPIReady(){
 function onPlayerStateChange(event){
   if(event.data == YT.PlayerState.PLAYING){
     document.getElementById("songTitle").innerText = player.getVideoData().title;
-    document.getElementById("albumArt").src = player.getVideoData().video_id ? `https://i.ytimg.com/vi/${player.getVideoData().video_id}/mqdefault.jpg` : 'https://i.imgur.com/8Km9tLL.png';
+    document.getElementById("albumArt").src = `https://i.ytimg.com/vi/${player.getVideoData().video_id}/mqdefault.jpg`;
     updateMediaSession(player.getVideoData().title);
     saveHistory(player.getVideoData().title);
     rotateAlbumArt();
   }
 }
 
-// Rotate album art
 function rotateAlbumArt(){
-  let art = document.getElementById("albumArt");
-  art.style.transform = "rotate(360deg)";
-  setTimeout(()=>{ art.style.transform="rotate(0deg)"; },5000);
+  let art=document.getElementById("albumArt");
+  art.style.transform="rotate(360deg)";
+  setTimeout(()=>{art.style.transform="rotate(0deg)";},5000);
 }
 
-// Playlist controls
-function nextVideo(){ 
-  if(currentIndex+1 < playlist.length){ currentIndex++; loadVideoByIndex(currentIndex); } 
-}
-function prevVideo(){ 
-  if(currentIndex-1 >=0){ currentIndex--; loadVideoByIndex(currentIndex); } 
-}
-function loadVideoByIndex(idx){
-  player.loadVideoById({videoId: playlist[idx].id, suggestedQuality:'large'});
-}
-function togglePlay(){
-  if(!ready) return; 
-  let state=player.getPlayerState(); 
-  state==1?player.pauseVideo():player.playVideo();
-}
+function nextVideo(){ if(currentIndex+1<playlist.length){currentIndex++; loadVideoByIndex(currentIndex); } }
+function prevVideo(){ if(currentIndex-1>=0){currentIndex--; loadVideoByIndex(currentIndex); } }
+function loadVideoByIndex(idx){ player.loadVideoById({videoId:playlist[idx].id, suggestedQuality:'large'}); }
+function togglePlay(){ if(!ready)return; let state=player.getPlayerState(); state==1?player.pauseVideo():player.playVideo(); }
 
-// MediaSession
 function updateMediaSession(title){
   if('mediaSession' in navigator){
-    navigator.mediaSession.metadata = new MediaMetadata({
-      title:title,
-      artist:'YouTube',
-      artwork:[{src:'https://i.imgur.com/8Km9tLL.png',sizes:'512x512',type:'image/png'}]
-    });
+    navigator.mediaSession.metadata = new MediaMetadata({title:title,artist:'YouTube',artwork:[{src:'https://i.imgur.com/8Km9tLL.png',sizes:'512x512',type:'image/png'}]});
     navigator.mediaSession.setActionHandler('play',()=>player.playVideo());
     navigator.mediaSession.setActionHandler('pause',()=>player.pauseVideo());
     navigator.mediaSession.setActionHandler('nexttrack',()=>nextVideo());
@@ -275,43 +163,41 @@ function updateMediaSession(title){
   }
 }
 
-// Search YouTube
-const API_KEY = "AIzaSyAfJIHop06R94612CGPmMiTByy5hUarL1M";
-function searchVideo(){
-  let q = document.getElementById("searchInput").value.trim();
+const API_KEY="AIzaSyAfJIHop06R94612CGPmMiTByy5hUarL1M";
+
+function searchVideo(pageToken=null){
+  let q=document.getElementById("searchInput").value.trim();
   if(!q) return alert("Please type song name!");
-  fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=6&q=${encodeURIComponent(q)}&key=${API_KEY}`)
-  .then(res => res.json())
-  .then(data => {
-    let results = document.getElementById("searchResults");
-    results.innerHTML = "";
-    playlist = []; currentIndex=-1;
-    if(!data.items || data.items.length==0){ results.innerHTML = "<p>No results found</p>"; return; }
+  currentQuery=q;
+  let url=`https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=10&q=${encodeURIComponent(q)}&key=${API_KEY}`;
+  if(pageToken) url += `&pageToken=${pageToken}`;
+  fetch(url).then(res=>res.json()).then(data=>{
+    let results=document.getElementById("searchResults");
+    if(!pageToken){results.innerHTML=''; playlist=[]; currentIndex=-1;}
     data.items.forEach((item,i)=>{
       let id=item.id.videoId,title=item.snippet.title,thumb=item.snippet.thumbnails.medium.url;
       playlist.push({id,title});
       let div=document.createElement("div");
       div.className="videoCard";
       div.innerHTML=`<img src="${thumb}"><p>${title}</p>`;
-      div.onclick=function(){ currentIndex=i; loadVideoByIndex(i); showHome(); };
+      div.onclick=function(){ currentIndex=playlist.findIndex(v=>v.id==id); loadVideoByIndex(currentIndex); showHome(); };
       results.appendChild(div);
     });
-  })
-  .catch(err=>alert("Error fetching YouTube API: "+err));
+    nextPageToken=data.nextPageToken || null;
+    document.getElementById("loadMoreBtn").style.display = nextPageToken?'inline-block':'none';
+  }).catch(err=>alert("Error fetching YouTube API: "+err));
 }
 
-// Voice search
+function loadMore(){ if(nextPageToken) searchVideo(nextPageToken); }
+
 function voiceSearch(){
-  if(!('webkitSpeechRecognition' in window)){
-    alert("Your browser does not support voice search");
-    return;
-  }
-  let recognition = new webkitSpeechRecognition();
-  recognition.lang = 'en-US';
+  if(!('webkitSpeechRecognition' in window)){ alert("Your browser does not support voice search"); return; }
+  let recognition=new webkitSpeechRecognition();
+  recognition.lang='en-US';
   recognition.start();
-  recognition.onresult = function(event){
-    let transcript = event.results[0][0].transcript;
-    document.getElementById("searchInput").value = transcript;
+  recognition.onresult=function(event){
+    let transcript=event.results[0][0].transcript;
+    document.getElementById("searchInput").value=transcript;
     searchVideo();
   };
 }
@@ -319,12 +205,11 @@ function voiceSearch(){
 // History
 function saveHistory(title){
   let h=JSON.parse(localStorage.getItem("ytHistory")||"[]");
-  if(h[0]!==title){h.unshift(title);}
+  if(h[0]!==title) h.unshift(title);
   localStorage.setItem("ytHistory",JSON.stringify(h.slice(0,20)));
 }
 function showHistory(){
-  hideAll();
-  historySection.style.display="block";
+  hideAll(); historySection.style.display="block";
   let h=JSON.parse(localStorage.getItem("ytHistory")||"[]");
   historyList.innerHTML="";
   h.forEach(t=>{
@@ -336,8 +221,8 @@ function showHistory(){
 }
 
 // Navigation
-function hideAll(){homeSection.style.display="none";historySection.style.display="none";}
-function showHome(){hideAll();homeSection.style.display="block";}
+function hideAll(){homeSection.style.display="none"; historySection.style.display="none";}
+function showHome(){hideAll(); homeSection.style.display="block";}
 function goBack(){showHome();}
 </script>
 </body>
