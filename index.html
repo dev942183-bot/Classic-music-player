@@ -2,48 +2,68 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>D-Music Player</title>
+<title>D-Music</title>
 <script src="https://www.youtube.com/iframe_api"></script>
-
 <style>
+
 body{
 margin:0;
-font-family:Arial;
-background:linear-gradient(to bottom,#2b0040,#6a00a3);
+font-family:Arial, sans-serif;
+background:#121212;
 color:white;
 text-align:center;
 }
 
-h2{
+.header{
 padding:20px;
+font-size:22px;
+font-weight:bold;
+}
+
+.search-box{
+margin:20px;
 }
 
 input{
 width:80%;
 padding:12px;
-border-radius:25px;
+border-radius:30px;
 border:none;
 outline:none;
-font-size:16px;
+background:#1e1e1e;
+color:white;
+font-size:15px;
 }
 
 button{
-padding:10px 20px;
+padding:10px 18px;
 border:none;
-border-radius:20px;
-background:#ff0080;
+border-radius:25px;
+background:#1DB954;
 color:white;
 font-weight:bold;
 margin:5px;
 cursor:pointer;
 }
 
-#player{
-margin-top:20px;
+.player-card{
+margin:30px 20px;
+padding:20px;
+background:#1e1e1e;
+border-radius:20px;
+}
+
+.song-title{
+font-size:18px;
+margin-bottom:15px;
 }
 
 .controls{
 margin-top:10px;
+}
+
+.controls button{
+background:#1DB954;
 }
 
 .equalizer{
@@ -53,10 +73,10 @@ margin-top:15px;
 }
 
 .bar{
-width:5px;
-height:20px;
+width:4px;
+height:15px;
 margin:3px;
-background:#ff00cc;
+background:#1DB954;
 animation:wave 1s infinite ease-in-out;
 }
 
@@ -67,24 +87,33 @@ animation:wave 1s infinite ease-in-out;
 
 @keyframes wave{
 0%,100%{height:10px;}
-50%{height:40px;}
+50%{height:35px;}
 }
+
+iframe{
+display:none;
+}
+
 </style>
 </head>
 
 <body>
 
-<h2>🎵 D-Music YouTube Player</h2>
+<div class="header">🎧 D-Music</div>
 
-<input type="text" id="search" placeholder="Search YouTube song...">
+<div class="search-box">
+<input type="text" id="search" placeholder="Search music...">
 <br><br>
 <button onclick="searchSong()">Search</button>
+</div>
 
-<div id="player"></div>
+<div class="player-card">
+<div class="song-title" id="title">No song playing</div>
 
-<div class="controls" id="controls" style="display:none;">
-<button onclick="prevVideo()">⏮ Prev</button>
-<button onclick="nextVideo()">Next ⏭</button>
+<div class="controls">
+<button onclick="prevVideo()">⏮</button>
+<button onclick="playPause()">⏯</button>
+<button onclick="nextVideo()">⏭</button>
 </div>
 
 <div class="equalizer" id="equalizer" style="display:none;">
@@ -95,15 +124,21 @@ animation:wave 1s infinite ease-in-out;
 <div class="bar"></div>
 </div>
 
+</div>
+
+<div id="player"></div>
+
 <script>
+
 let player;
 let videoList=[];
 let currentIndex=0;
+let isPlaying=false;
 
 function onYouTubeIframeAPIReady(){
 player=new YT.Player('player',{
-height:'250',
-width:'90%',
+height:'0',
+width:'0',
 videoId:'',
 events:{
 'onStateChange':onPlayerStateChange
@@ -123,8 +158,16 @@ fetch("https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxR
 videoList=data.items.map(item=>item.id.videoId);
 currentIndex=0;
 player.loadVideoById(videoList[currentIndex]);
-document.getElementById("controls").style.display="block";
+document.getElementById("title").innerText=query;
 });
+}
+
+function playPause(){
+if(isPlaying){
+player.pauseVideo();
+}else{
+player.playVideo();
+}
 }
 
 function nextVideo(){
@@ -143,12 +186,19 @@ player.loadVideoById(videoList[currentIndex]);
 
 function onPlayerStateChange(event){
 if(event.data==YT.PlayerState.PLAYING){
+isPlaying=true;
 document.getElementById("equalizer").style.display="flex";
 }
+else{
+isPlaying=false;
+document.getElementById("equalizer").style.display="none";
+}
+
 if(event.data==YT.PlayerState.ENDED){
 nextVideo();
 }
 }
+
 </script>
 
 </body>
