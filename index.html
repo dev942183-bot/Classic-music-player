@@ -2,227 +2,190 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Debraj Pramanik Music Player</title>
+<title>D-Music</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
 <style>
 body{
-  margin:0; font-family:Arial,sans-serif; background:#1E90FF; color:white; text-align:center; overflow-x:hidden;
+  margin:0;
+  font-family:'Poppins',sans-serif;
+  background:linear-gradient(135deg,#1a0033,#330066,#660099);
+  color:white;
 }
-/* Splash Screen */
-#splash{
-  position:fixed; top:0; left:0; width:100%; height:100%;
-  background:#0b65c2; display:flex; flex-direction:column; justify-content:center; align-items:center; z-index:1000;
-  animation:fadeOut 0.5s ease-in-out forwards; animation-delay:3s;
+
+/* HEADER */
+.header{
+  padding:20px;
+  font-size:28px;
+  font-weight:600;
 }
-#splash h1{font-size:32px;margin-bottom:10px;}
-#splash p{font-size:18px;}
-@keyframes fadeOut{ to{opacity:0;visibility:hidden;} }
 
-/* Animated blurred background */
-#backgroundBlur{
-  position:fixed; top:0; left:0; width:100%; height:100%;
-  background:linear-gradient(120deg,#1E90FF,#0b65c2);
-  filter:blur(60px); z-index:-1; animation:shift 10s infinite alternate;
+/* SEARCH */
+.searchBox{
+  padding:15px;
 }
-@keyframes shift{0%{background-position:0% 50%;} 100%{background-position:100% 50%;}}
-
-header{padding:15px; font-size:24px; font-weight:bold; background:#0b65c2;}
-.nav{ display:flex; justify-content:space-between; background:#0b65c2; padding:10px;}
-.nav button{ padding:8px 15px; border:none; border-radius:12px; background:#1565C0; color:white; cursor:pointer;}
-.nav button:hover{background:#1C7ED6;}
-.card{padding:15px;}
-#songTitle{margin:10px;font-weight:600;font-size:18px;}
-#player{margin-top:10px;width:100%;height:250px;}
-.videoCard{ background:#1565C0; margin:10px 0; padding:10px; border-radius:12px; cursor:pointer; transition:.3s;}
-.videoCard:hover{background:#1C7ED6;}
-.videoCard img{width:100%;border-radius:8px;}
-.bottomBar{
-  position:fixed; bottom:0; width:100%; background:#0b65c2; display:flex; justify-content:space-around; padding:12px; display:none;
+.searchBox input{
+  width:100%;
+  padding:15px;
+  border-radius:40px;
+  border:none;
+  background:rgba(255,255,255,0.1);
+  backdrop-filter:blur(10px);
+  color:white;
+  font-size:16px;
+  box-shadow:0 0 15px rgba(255,0,255,0.5);
 }
-.bottomBar button{ background:none; border:none; color:white; font-size:24px; cursor:pointer;}
 
-/* Equalizer animation */
-.equalizer{ display:flex; justify-content:center; margin:20px 0;}
-.equalizer span{ display:inline-block; width:6px; height:20px; background:#fff; margin:0 3px; animation:bounce 1s infinite ease-in-out;}
-.equalizer span:nth-child(2){animation-delay:0.2s;}
-.equalizer span:nth-child(3){animation-delay:0.4s;}
-.equalizer span:nth-child(4){animation-delay:0.6s;}
-.equalizer span:nth-child(5){animation-delay:0.8s;}
-@keyframes bounce{ 0%,100%{height:20px;} 50%{height:50px;}}
+/* TRENDING CARDS */
+.sectionTitle{
+  padding:10px 20px;
+  font-size:20px;
+  font-weight:600;
+}
 
-#searchSection,#historySection{display:none;}
-.searchBox{margin:20px 0;}
-.searchBox input{width:50%; padding:8px; border-radius:12px; border:none;}
-.searchBox button{padding:8px 12px; margin-left:5px; border:none; border-radius:12px; background:#1565C0; color:white; cursor:pointer;}
-.searchBox button:hover{background:#1C7ED6;}
-.voiceBtn{padding:8px 12px; margin-left:5px; border:none; border-radius:12px; background:#FF4500; color:white; cursor:pointer;}
-.voiceBtn:hover{background:#FF6347;}
-#albumArt{margin:20px auto; width:150px;height:150px; border-radius:50%; border:3px solid white; transition: transform 0.5s linear;}
-#loadMoreBtn{padding:10px 15px; border-radius:12px; background:#1565C0; border:none; color:white; cursor:pointer; margin-top:10px;}
-#loadMoreBtn:hover{background:#1C7ED6;}
+.cards{
+  display:flex;
+  overflow-x:auto;
+  padding:10px;
+}
 
-/* Volume Control */
-.volumeControl{margin:15px 0;}
-.volumeControl input[type=range]{width:50%;}
+.card{
+  min-width:200px;
+  margin-right:15px;
+  background:rgba(255,255,255,0.08);
+  backdrop-filter:blur(15px);
+  border-radius:20px;
+  padding:10px;
+  box-shadow:0 0 20px rgba(255,0,255,0.3);
+  transition:0.3s;
+}
+.card:hover{
+  transform:scale(1.05);
+  box-shadow:0 0 30px rgba(255,0,255,0.7);
+}
+.card img{
+  width:100%;
+  border-radius:15px;
+}
+.card p{
+  margin:8px 0 0 0;
+  font-weight:600;
+}
+
+/* CATEGORY BUTTONS */
+.categories{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:10px;
+  padding:20px;
+}
+.cat{
+  background:rgba(255,255,255,0.08);
+  padding:15px;
+  text-align:center;
+  border-radius:20px;
+  backdrop-filter:blur(10px);
+}
+
+/* PLAYER BAR */
+.playerBar{
+  position:fixed;
+  bottom:70px;
+  left:10px;
+  right:10px;
+  background:rgba(255,255,255,0.1);
+  backdrop-filter:blur(15px);
+  border-radius:25px;
+  padding:15px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  box-shadow:0 0 25px rgba(255,0,255,0.4);
+}
+
+.playerInfo{
+  display:flex;
+  align-items:center;
+}
+.playerInfo img{
+  width:50px;
+  height:50px;
+  border-radius:50%;
+  margin-right:10px;
+}
+
+/* BOTTOM NAV */
+.bottomNav{
+  position:fixed;
+  bottom:0;
+  width:100%;
+  background:rgba(0,0,0,0.5);
+  backdrop-filter:blur(15px);
+  display:flex;
+  justify-content:space-around;
+  padding:10px 0;
+  font-size:14px;
+}
+.bottomNav div{
+  text-align:center;
+}
 </style>
 </head>
+
 <body>
 
-<div id="backgroundBlur"></div>
+<div class="header">🎵 D-Music</div>
 
-<div id="splash">
-  <h1>DEBRAJ PRAMANIK MUSIC PLAYER</h1>
-  <p>Loading...</p>
+<div class="searchBox">
+  <input type="text" placeholder="Search music...">
 </div>
 
-<header>🎵 Dev YouTube Player Blue</header>
+<div class="sectionTitle">Trending Now</div>
 
-<div class="nav">
-  <button onclick="goBack()">🔙 Back</button>
-  <button onclick="showHistory()">History</button>
-</div>
-
-<div class="card" id="homeSection">
-  <div id="songTitle">No song playing</div>
-  <img id="albumArt" src="https://i.imgur.com/8Km9tLL.png">
-  <div id="player"></div>
-  <div class="equalizer"><span></span><span></span><span></span><span></span><span></span></div>
-  
-  <div class="searchBox">
-    <input type="text" id="searchInput" placeholder="Search YouTube...">
-    <button onclick="searchVideo()">Search</button>
-    <button class="voiceBtn" onclick="voiceSearch()">🎤</button>
+<div class="cards">
+  <div class="card">
+    <img src="https://i.imgur.com/8Km9tLL.png">
+    <p>Synthwave Vibes</p>
   </div>
-  
-  <div id="searchResults"></div>
-  <button id="loadMoreBtn" style="display:none;" onclick="loadMore()">Load More</button>
 
-  <!-- Volume Slider -->
-  <div class="volumeControl">
-    <label>Volume:</label>
-    <input type="range" id="volumeSlider" min="0" max="100" value="100" onchange="setVolume(this.value)">
+  <div class="card">
+    <img src="https://i.imgur.com/8Km9tLL.png">
+    <p>Romantic Hits</p>
+  </div>
+
+  <div class="card">
+    <img src="https://i.imgur.com/8Km9tLL.png">
+    <p>Party Anthems</p>
   </div>
 </div>
 
-<div class="card" id="historySection">
-  <h3>History</h3>
-  <ul id="historyList"></ul>
+<div class="categories">
+  <div class="cat">🎧 Playlists</div>
+  <div class="cat">📊 Genres</div>
+  <div class="cat">❤️ Favorites</div>
+  <div class="cat">🎙 Radios</div>
 </div>
 
-<div class="bottomBar">
-  <button onclick="prevVideo()">⏮</button>
-  <button onclick="togglePlay()">⏯</button>
-  <button onclick="nextVideo()">⏭</button>
+<!-- Player Bar -->
+<div class="playerBar">
+  <div class="playerInfo">
+    <img src="https://i.imgur.com/8Km9tLL.png">
+    <div>
+      <div>Summer Vibes</div>
+      <small>DJ Pulse</small>
+    </div>
+  </div>
+  <div>⏸ ▶️ ⏭</div>
 </div>
 
-<script src="https://www.youtube.com/iframe_api"></script>
-<script>
-let player, ready=false;
-let playlist=[], currentIndex=-1;
-let nextPageToken=null, currentQuery='';
+<!-- Bottom Navigation -->
+<div class="bottomNav">
+  <div>🏠<br>Home</div>
+  <div>🎵<br>Explore</div>
+  <div>❤️<br>Library</div>
+  <div>👤<br>Profile</div>
+</div>
 
-window.onload=function(){setTimeout(()=>{document.getElementById("splash").style.display="none";},3000);};
-
-function onYouTubeIframeAPIReady(){
-  player = new YT.Player('player',{
-    height:'250', width:'100%',
-    playerVars:{rel:0,modestbranding:1},
-    events:{'onReady':()=>{ready=true;player.setVolume(100);}, 'onStateChange':onPlayerStateChange}
-  });
-}
-
-function onPlayerStateChange(event){
-  const bottomBar = document.querySelector('.bottomBar');
-  if(event.data == YT.PlayerState.PLAYING){
-    document.getElementById("songTitle").innerText = player.getVideoData().title;
-    document.getElementById("albumArt").src = `https://i.ytimg.com/vi/${player.getVideoData().video_id}/mqdefault.jpg`;
-    updateMediaSession(player.getVideoData().title);
-    saveHistory(player.getVideoData().title);
-    rotateAlbumArt();
-    bottomBar.style.display='flex'; // Show buttons only when song plays
-  }
-}
-
-function rotateAlbumArt(){
-  let art=document.getElementById("albumArt");
-  art.style.transform="rotate(360deg)";
-  setTimeout(()=>{art.style.transform="rotate(0deg)";},5000);
-}
-
-function nextVideo(){ if(currentIndex+1<playlist.length){ currentIndex++; loadVideoByIndex(currentIndex); } }
-function prevVideo(){ if(currentIndex-1>=0){ currentIndex--; loadVideoByIndex(currentIndex); } }
-function loadVideoByIndex(idx){ player.loadVideoById({videoId:playlist[idx].id, suggestedQuality:'large'}); }
-function togglePlay(){ if(!ready)return; let state=player.getPlayerState(); state==1?player.pauseVideo():player.playVideo(); }
-
-function setVolume(value){ if(player && ready) player.setVolume(value); }
-
-function updateMediaSession(title){
-  if('mediaSession' in navigator){
-    navigator.mediaSession.metadata = new MediaMetadata({title:title,artist:'YouTube',artwork:[{src:'https://i.imgur.com/8Km9tLL.png',sizes:'512x512',type:'image/png'}]});
-    navigator.mediaSession.setActionHandler('play',()=>player.playVideo());
-    navigator.mediaSession.setActionHandler('pause',()=>player.pauseVideo());
-    navigator.mediaSession.setActionHandler('nexttrack',()=>nextVideo());
-    navigator.mediaSession.setActionHandler('previoustrack',()=>prevVideo());
-  }
-}
-
-const API_KEY="AIzaSyAfJIHop06R94612CGPmMiTByy5hUarL1M";
-
-function searchVideo(pageToken=null){
-  let q=document.getElementById("searchInput").value.trim();
-  if(!q) return alert("Please type song name!");
-  currentQuery=q;
-  let url=`https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=10&q=${encodeURIComponent(q)}&key=${API_KEY}`;
-  if(pageToken) url += `&pageToken=${pageToken}`;
-  fetch(url).then(res=>res.json()).then(data=>{
-    let results=document.getElementById("searchResults");
-    if(!pageToken){results.innerHTML=''; playlist=[]; currentIndex=-1;}
-    data.items.forEach((item,i)=>{
-      let id=item.id.videoId,title=item.snippet.title,thumb=item.snippet.thumbnails.medium.url;
-      playlist.push({id,title});
-      let div=document.createElement("div");
-      div.className="videoCard";
-      div.innerHTML=`<img src="${thumb}"><p>${title}</p>`;
-      div.onclick=function(){ currentIndex=playlist.findIndex(v=>v.id==id); loadVideoByIndex(currentIndex); showHome(); };
-      results.appendChild(div);
-    });
-    nextPageToken=data.nextPageToken || null;
-    document.getElementById("loadMoreBtn").style.display = nextPageToken?'inline-block':'none';
-  }).catch(err=>alert("Error fetching YouTube API: "+err));
-}
-
-function loadMore(){ if(nextPageToken) searchVideo(nextPageToken); }
-
-function voiceSearch(){
-  if(!('webkitSpeechRecognition' in window)){ alert("Your browser does not support voice search"); return; }
-  let recognition=new webkitSpeechRecognition();
-  recognition.lang='en-US';
-  recognition.start();
-  recognition.onresult=function(event){
-    let transcript=event.results[0][0].transcript;
-    document.getElementById("searchInput").value=transcript;
-    searchVideo();
-  };
-}
-
-function saveHistory(title){
-  let h=JSON.parse(localStorage.getItem("ytHistory")||"[]");
-  if(h[0]!==title) h.unshift(title);
-  localStorage.setItem("ytHistory",JSON.stringify(h.slice(0,20)));
-}
-function showHistory(){
-  hideAll(); historySection.style.display="block";
-  let h=JSON.parse(localStorage.getItem("ytHistory")||"[]");
-  historyList.innerHTML="";
-  h.forEach(t=>{
-    let li=document.createElement("li");
-    li.textContent=t;
-    li.onclick=()=>alert("Play from YouTube app");
-    historyList.appendChild(li);
-  });
-}
-function hideAll(){homeSection.style.display="none"; historySection.style.display="none";}
-function showHome(){hideAll(); homeSection.style.display="block";}
-function goBack(){showHome();}
-</script>
 </body>
 </html>
