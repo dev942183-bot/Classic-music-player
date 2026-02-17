@@ -1,13 +1,19 @@
-const API_KEY = "AIzaSyAfJIHop06R94612CGPmMiTByy5hUarL1M";
+ const API_KEY = "AIzaSyAfJIHop06R94612CGPmMiTByy5hUarL1M";
 
 let player;
+let playerReady = false;
 
 function onYouTubeIframeAPIReady(){
 player = new YT.Player('player',{
 height:'0',
 width:'0',
 videoId:'',
-playerVars:{playsinline:1}
+playerVars:{playsinline:1},
+events:{
+'onReady': function(){
+playerReady = true;
+}
+}
 });
 }
 
@@ -31,7 +37,10 @@ let card = document.createElement("div");
 card.className = "card";
 card.innerHTML = `<img src="${thumb}"><div>${title}</div>`;
 card.onclick = function(){
-playVideo(videoId,title);
+if(playerReady){
+player.loadVideoById(videoId);
+document.getElementById("nowPlaying").innerText = "Playing: " + title;
+}
 };
 
 results.appendChild(card);
@@ -39,21 +48,4 @@ results.appendChild(card);
 });
 
 });
-}
-
-function playVideo(id,title){
-player.loadVideoById(id);
-document.getElementById("nowPlaying").innerText = "Playing: " + title;
-}
-
-function goHome(){
-document.getElementById("results").innerHTML = "";
-}
-
-function focusSearch(){
-document.getElementById("searchInput").focus();
-}
-
-function clearResults(){
-document.getElementById("results").innerHTML = "";
 }
