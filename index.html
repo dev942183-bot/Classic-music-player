@@ -1,172 +1,153 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html>
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>D-Music</title>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+<meta charset="UTF-8">
+<title>D-Music Player</title>
+<script src="https://www.youtube.com/iframe_api"></script>
 
 <style>
 body{
-  margin:0;
-  font-family:'Poppins',sans-serif;
-  background:linear-gradient(135deg,#1a0033,#3a0066,#660099);
-  color:white;
+margin:0;
+font-family:Arial;
+background:linear-gradient(to bottom,#2b0040,#6a00a3);
+color:white;
+text-align:center;
 }
 
-/* HEADER */
-.header{
-  padding:20px;
-  font-size:26px;
-  font-weight:600;
+h2{
+padding:20px;
 }
 
-/* SEARCH */
-.search{
-  padding:0 20px 15px 20px;
-}
-.search input{
-  width:100%;
-  padding:14px;
-  border-radius:40px;
-  border:none;
-  background:rgba(255,255,255,0.1);
-  color:white;
-  font-size:15px;
+input{
+width:80%;
+padding:12px;
+border-radius:25px;
+border:none;
+outline:none;
+font-size:16px;
 }
 
-/* TRENDING */
-.section{
-  padding:0 20px;
-}
-.cards{
-  display:flex;
-  gap:15px;
-  overflow-x:auto;
-}
-.card{
-  min-width:160px;
-  height:200px;
-  border-radius:25px;
-  padding:15px;
-  display:flex;
-  align-items:flex-end;
-  font-weight:600;
-  cursor:pointer;
-  box-shadow:0 0 20px rgba(255,0,255,0.6);
-}
-.card1{background:linear-gradient(145deg,#ff00cc,#6600ff);}
-.card2{background:linear-gradient(145deg,#ff6600,#ff0066);}
-.card3{background:linear-gradient(145deg,#00ccff,#6600ff);}
-
-/* MINI PLAYER */
-.mini{
-  position:fixed;
-  bottom:70px;
-  left:10px;
-  right:10px;
-  background:rgba(255,255,255,0.1);
-  padding:15px;
-  border-radius:25px;
-  backdrop-filter:blur(10px);
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  font-size:14px;
+button{
+padding:10px 20px;
+border:none;
+border-radius:20px;
+background:#ff0080;
+color:white;
+font-weight:bold;
+margin:5px;
+cursor:pointer;
 }
 
-/* BUTTON */
-.mini button{
-  background:#ff00cc;
-  border:none;
-  padding:8px 12px;
-  border-radius:20px;
-  color:white;
-  margin-left:5px;
+#player{
+margin-top:20px;
 }
 
-/* BOTTOM NAV */
-.bottom{
-  position:fixed;
-  bottom:0;
-  width:100%;
-  background:rgba(0,0,0,0.6);
-  display:flex;
-  justify-content:space-around;
-  padding:10px 0;
-  font-size:13px;
+.controls{
+margin-top:10px;
 }
 
-iframe{
-  display:none;
+.equalizer{
+display:flex;
+justify-content:center;
+margin-top:15px;
+}
+
+.bar{
+width:5px;
+height:20px;
+margin:3px;
+background:#ff00cc;
+animation:wave 1s infinite ease-in-out;
+}
+
+.bar:nth-child(2){animation-delay:0.2s;}
+.bar:nth-child(3){animation-delay:0.4s;}
+.bar:nth-child(4){animation-delay:0.6s;}
+.bar:nth-child(5){animation-delay:0.8s;}
+
+@keyframes wave{
+0%,100%{height:10px;}
+50%{height:40px;}
 }
 </style>
 </head>
 
 <body>
 
-<div class="header">🎵 D-Music</div>
+<h2>🎵 D-Music YouTube Player</h2>
 
-<div class="search">
-  <input type="text" placeholder="Search (demo)">
-</div>
+<input type="text" id="search" placeholder="Search YouTube song...">
+<br><br>
+<button onclick="searchSong()">Search</button>
 
-<div class="section">
-  <h3>Trending Now</h3>
-  <div class="cards">
-    <div class="card card1" onclick="play(0)">Synthwave</div>
-    <div class="card card2" onclick="play(1)">Romantic</div>
-    <div class="card card3" onclick="play(2)">Party</div>
-  </div>
-</div>
-
-<!-- Hidden YouTube Player -->
 <div id="player"></div>
 
-<!-- MINI PLAYER -->
-<div class="mini">
-  <div id="now">No song playing</div>
-  <div>
-    <button onclick="prev()">⏮</button>
-    <button onclick="next()">⏭</button>
-  </div>
+<div class="controls" id="controls" style="display:none;">
+<button onclick="prevVideo()">⏮ Prev</button>
+<button onclick="nextVideo()">Next ⏭</button>
 </div>
 
-<!-- BOTTOM NAV -->
-<div class="bottom">
-  <div>🏠 Home</div>
-  <div>🎵 Explore</div>
-  <div>❤️ Library</div>
-  <div>👤 Profile</div>
+<div class="equalizer" id="equalizer" style="display:none;">
+<div class="bar"></div>
+<div class="bar"></div>
+<div class="bar"></div>
+<div class="bar"></div>
+<div class="bar"></div>
 </div>
 
 <script>
-let songs=[
-  {id:"60ItHLz5WEA", name:"Faded"},
-  {id:"kJQP7kiw5Fk", name:"Despacito"},
-  {id:"9bZkp7q19f0", name:"Gangnam Style"}
-];
+let player;
+let videoList=[];
+let currentIndex=0;
 
-let current=0;
-
-function play(index){
-  current=index;
-  document.getElementById("player").innerHTML=
-  `<iframe width="0" height="0"
-   src="https://www.youtube.com/embed/${songs[current].id}?autoplay=1"
-   allow="autoplay"></iframe>`;
-  document.getElementById("now").innerText="🎵 "+songs[current].name;
+function onYouTubeIframeAPIReady(){
+player=new YT.Player('player',{
+height:'250',
+width:'90%',
+videoId:'',
+events:{
+'onStateChange':onPlayerStateChange
+}
+});
 }
 
-function next(){
-  current++;
-  if(current>=songs.length) current=0;
-  play(current);
+function searchSong(){
+let query=document.getElementById("search").value;
+
+fetch("https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=10&q="
++ query +
+"&key=AIzaSyAfJIHop06R94612CGPmMiTByy5hUarL1M")
+
+.then(response=>response.json())
+.then(data=>{
+videoList=data.items.map(item=>item.id.videoId);
+currentIndex=0;
+player.loadVideoById(videoList[currentIndex]);
+document.getElementById("controls").style.display="block";
+});
 }
 
-function prev(){
-  current--;
-  if(current<0) current=songs.length-1;
-  play(current);
+function nextVideo(){
+if(currentIndex < videoList.length-1){
+currentIndex++;
+player.loadVideoById(videoList[currentIndex]);
+}
+}
+
+function prevVideo(){
+if(currentIndex > 0){
+currentIndex--;
+player.loadVideoById(videoList[currentIndex]);
+}
+}
+
+function onPlayerStateChange(event){
+if(event.data==YT.PlayerState.PLAYING){
+document.getElementById("equalizer").style.display="flex";
+}
+if(event.data==YT.PlayerState.ENDED){
+nextVideo();
+}
 }
 </script>
 
