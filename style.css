@@ -1,199 +1,91 @@
- /* General */
-body{
-  margin:0;
-  font-family:Arial,sans-serif;
-  background:#1E90FF;
-  color:white;
-  text-align:center;
-  overflow-x:hidden;
+ body{
+margin:0;
+font-family:Arial;
+background:linear-gradient(180deg,#1a002f,#2d0057,#140021);
+color:white;
 }
 
-/* Splash Screen */
-#splash{
-  position:fixed;
-  top:0;
-  left:0;
-  width:100%;
-  height:100%;
-  background:#0b65c2;
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  align-items:center;
-  z-index:1000;
-  animation:fadeOut 0.5s ease-in-out forwards;
-  animation-delay:3s;
-}
-#splash h1{
-  font-size:32px;
-  margin-bottom:10px;
-}
-#splash p{
-  font-size:18px;
-}
-@keyframes fadeOut{
-  to{opacity:0;visibility:hidden;}
+.header{
+text-align:center;
+padding:15px;
+background:#20003d;
 }
 
-/* Animated blurred background */
-#backgroundBlur{
-  position:fixed;
-  top:0;
-  left:0;
-  width:100%;
-  height:100%;
-  background:linear-gradient(120deg,#1E90FF,#0b65c2);
-  filter:blur(60px);
-  z-index:-1;
-  animation:shift 10s infinite alternate;
-}
-@keyframes shift{
-  0%{background-position:0% 50%;}
-  100%{background-position:100% 50%;}
+.banner{
+padding:30px;
+text-align:center;
+font-size:22px;
+background:linear-gradient(90deg,#ff00ff,#6a00ff);
+border-radius:20px;
+margin:15px;
 }
 
-/* Header & Navigation */
-header{
-  padding:15px;
-  font-size:24px;
-  font-weight:bold;
-  background:#0b65c2;
-}
-.nav{
-  display:flex;
-  justify-content:space-between;
-  background:#0b65c2;
-  padding:10px;
-}
-.nav button{
-  padding:8px 15px;
-  border:none;
-  border-radius:12px;
-  background:#1565C0;
-  color:white;
-  cursor:pointer;
-}
-.nav button:hover{background:#1C7ED6;}
-
-/* Card Container */
-.card{padding:15px;}
-#songTitle{
-  margin:10px;
-  font-weight:600;
-  font-size:18px;
-}
-#player{margin-top:10px;width:100%;height:250px;}
-
-/* Playlist / Video Cards */
-.videoCard{
-  background:#1565C0;
-  margin:10px 0;
-  padding:10px;
-  border-radius:12px;
-  cursor:pointer;
-  transition:.3s;
-}
-.videoCard:hover{background:#1C7ED6;}
-.videoCard img{width:100%;border-radius:8px;}
-
-/* Bottom Music Control Bar */
-.bottomBar{
-  position:fixed;
-  bottom:0;
-  width:100%;
-  background:#0b65c2;
-  display:flex;
-  justify-content:space-around;
-  padding:12px;
-  display:none; /* Only show when song plays */
-}
-.bottomBar button{
-  background:none;
-  border:none;
-  color:white;
-  font-size:24px;
-  cursor:pointer;
+.search-box{
+display:flex;
+justify-content:center;
+margin:10px;
 }
 
-/* Equalizer Animation */
-.equalizer{
-  display:flex;
-  justify-content:center;
-  margin:20px 0;
-}
-.equalizer span{
-  display:inline-block;
-  width:6px;
-  height:20px;
-  background:#fff;
-  margin:0 3px;
-  animation:bounce 1s infinite ease-in-out;
-}
-.equalizer span:nth-child(2){animation-delay:0.2s;}
-.equalizer span:nth-child(3){animation-delay:0.4s;}
-.equalizer span:nth-child(4){animation-delay:0.6s;}
-.equalizer span:nth-child(5){animation-delay:0.8s;}
-@keyframes bounce{
-  0%,100%{height:20px;}
-  50%{height:50px;}
+input{
+width:65%;
+padding:12px;
+border-radius:25px;
+border:none;
+font-size:16px;
 }
 
-/* Search Section */
-#searchSection,#historySection{display:none;}
-.searchBox{
-  margin:20px 0;
-}
-.searchBox input{
-  width:50%;
-  padding:8px;
-  border-radius:12px;
-  border:none;
-}
-.searchBox button{
-  padding:8px 12px;
-  margin-left:5px;
-  border:none;
-  border-radius:12px;
-  background:#1565C0;
-  color:white;
-  cursor:pointer;
-}
-.searchBox button:hover{background:#1C7ED6;}
-.voiceBtn{
-  padding:8px 12px;
-  margin-left:5px;
-  border:none;
-  border-radius:12px;
-  background:#FF4500;
-  color:white;
-  cursor:pointer;
-}
-.voiceBtn:hover{background:#FF6347;}
-
-/* Album Art */
-#albumArt{
-  margin:20px auto;
-  width:150px;
-  height:150px;
-  border-radius:50%;
-  border:3px solid white;
-  transition: transform 0.5s linear;
+button{
+padding:12px 18px;
+border:none;
+border-radius:25px;
+margin-left:8px;
+background:#ff00ff;
+color:white;
+font-weight:bold;
+cursor:pointer;
 }
 
-/* Load More Button */
-#loadMoreBtn{
-  padding:10px 15px;
-  border-radius:12px;
-  background:#1565C0;
-  border:none;
-  color:white;
-  cursor:pointer;
-  margin-top:10px;
+.results{
+padding:15px;
 }
-#loadMoreBtn:hover{background:#1C7ED6;}
 
-/* Volume Control */
-.volumeControl{
-  margin:15px 0;
+.card{
+background:#2a004d;
+margin:10px 0;
+padding:10px;
+border-radius:15px;
+display:flex;
+align-items:center;
+cursor:pointer;
 }
-.volumeControl input[type=range]{width:50%;}
+
+.card img{
+width:90px;
+border-radius:10px;
+margin-right:10px;
+}
+
+.mini-player{
+position:fixed;
+bottom:60px;
+width:100%;
+background:#20003d;
+padding:10px;
+text-align:center;
+}
+
+.bottom-nav{
+position:fixed;
+bottom:0;
+width:100%;
+display:flex;
+justify-content:space-around;
+background:#140021;
+padding:10px;
+}
+
+.bottom-nav button{
+background:none;
+color:white;
+font-size:14px;
+}
