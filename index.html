@@ -1,174 +1,43 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>D-Music</title>
-
-<style>
-body{
-margin:0;
-font-family:Arial;
-background:linear-gradient(180deg,#1a002f,#2d0057,#140021);
-color:white;
-}
-
-.header{
-text-align:center;
-padding:20px;
-font-size:28px;
-font-weight:bold;
-}
-
-.search-box{
-display:flex;
-justify-content:center;
-margin:10px;
-}
-
-input{
-width:70%;
-padding:12px;
-border-radius:30px;
-border:none;
-font-size:16px;
-}
-
-button{
-padding:12px 20px;
-border:none;
-border-radius:30px;
-margin-left:10px;
-background:#ff00ff;
-color:white;
-font-weight:bold;
-cursor:pointer;
-}
-
-.results{
-padding:15px;
-}
-
-.card{
-background:#2a004d;
-margin:10px 0;
-padding:10px;
-border-radius:15px;
-display:flex;
-align-items:center;
-cursor:pointer;
-}
-
-.card img{
-width:100px;
-border-radius:10px;
-margin-right:10px;
-}
-
-.player{
-position:fixed;
-bottom:0;
-width:100%;
-background:#2a004d;
-padding:15px;
-text-align:center;
-}
-
-.equalizer{
-display:flex;
-justify-content:center;
-margin-top:5px;
-}
-
-.bar{
-width:5px;
-height:15px;
-background:#ff00ff;
-margin:0 3px;
-animation:wave 1s infinite ease-in-out;
-}
-
-.bar:nth-child(2){animation-delay:.2s}
-.bar:nth-child(3){animation-delay:.4s}
-.bar:nth-child(4){animation-delay:.6s}
-.bar:nth-child(5){animation-delay:.8s}
-
-@keyframes wave{
-0%,100%{height:10px}
-50%{height:25px}
-}
-
-</style>
+<link rel="stylesheet" href="style.css">
+<script src="https://www.youtube.com/iframe_api"></script>
 </head>
+
 <body>
 
-<div class="header">🎧 D-Music</div>
+<div class="header">
+  <h2>D-Music</h2>
+</div>
+
+<div class="banner">
+  <h1>Feel The Music 🎧</h1>
+</div>
 
 <div class="search-box">
-<input type="text" id="searchInput" placeholder="Search music...">
-<button onclick="searchMusic()">Search</button>
+  <input type="text" id="searchInput" placeholder="Search songs...">
+  <button onclick="searchMusic()">Search</button>
 </div>
 
-<div class="results" id="results"></div>
+<div id="results" class="results"></div>
 
-<div class="player">
-<div id="nowPlaying">No song playing</div>
-<div id="player"></div>
-<div class="equalizer">
-<div class="bar"></div>
-<div class="bar"></div>
-<div class="bar"></div>
-<div class="bar"></div>
-<div class="bar"></div>
-</div>
+<!-- Mini Player -->
+<div class="mini-player">
+  <div id="nowPlaying">No song playing</div>
+  <div id="player"></div>
 </div>
 
-<script src="https://www.youtube.com/iframe_api"></script>
+<!-- Bottom Nav -->
+<div class="bottom-nav">
+  <button onclick="goHome()">Home</button>
+  <button onclick="focusSearch()">Search</button>
+  <button onclick="clearResults()">Library</button>
+</div>
 
-<script>
-
-let player;
-let currentVideoId="";
-const API_KEY="AIzaSyAfJIHop06R94612CGPmMiTByy5hUarL1M";
-
-function onYouTubeIframeAPIReady(){
-player=new YT.Player('player',{
-height:'0',
-width:'0',
-videoId:'',
-playerVars:{'playsinline':1},
-});
-}
-
-function searchMusic(){
-let query=document.getElementById("searchInput").value;
-fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=5&q=${query}&key=${API_KEY}`)
-.then(res=>res.json())
-.then(data=>{
-let resultsDiv=document.getElementById("results");
-resultsDiv.innerHTML="";
-data.items.forEach(item=>{
-let videoId=item.id.videoId;
-let title=item.snippet.title;
-let thumb=item.snippet.thumbnails.medium.url;
-
-let card=document.createElement("div");
-card.className="card";
-card.innerHTML=`<img src="${thumb}"><div>${title}</div>`;
-card.onclick=function(){ playVideo(videoId,title); };
-
-resultsDiv.appendChild(card);
-});
-});
-}
-
-function playVideo(id,title){
-currentVideoId=id;
-player.loadVideoById(id);
-document.getElementById("nowPlaying").innerText="Playing: "+title;
-}
-
-</script>
-
+<script src="app.js"></script>
 </body>
 </html>
