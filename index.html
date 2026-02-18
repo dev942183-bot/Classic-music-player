@@ -1,233 +1,69 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>D-Music</title>
-<script src="https://www.youtube.com/iframe_api"></script>
-
-<style>
-body{
-margin:0;
-font-family:Arial;
-background:linear-gradient(180deg,#140021,#2b0057,#1a0033);
-color:white;
-overflow-x:hidden;
-}
-
-/* Header */
-.header{
-display:flex;
-justify-content:space-between;
-align-items:center;
-padding:15px;
-font-size:22px;
-font-weight:bold;
-}
-
-/* Banner */
-.banner{
-margin:15px;
-padding:40px 20px;
-border-radius:25px;
-background:linear-gradient(90deg,#ff00cc,#6a00ff);
-text-align:center;
-font-size:22px;
-font-weight:bold;
-}
-
-/* Search */
-.search-box{
-display:flex;
-justify-content:center;
-margin:10px;
-}
-.search-box input{
-width:70%;
-padding:12px;
-border-radius:30px;
-border:none;
-font-size:16px;
-}
-.search-box button{
-padding:12px 20px;
-border:none;
-border-radius:30px;
-margin-left:8px;
-background:#ff00cc;
-color:white;
-font-weight:bold;
-}
-
-/* Cards */
-.results{
-padding:15px;
-}
-.card{
-background:#250047;
-border-radius:18px;
-padding:10px;
-margin-bottom:12px;
-display:flex;
-align-items:center;
-cursor:pointer;
-transition:0.3s;
-}
-.card:hover{
-transform:scale(1.02);
-}
-.card img{
-width:90px;
-border-radius:12px;
-margin-right:10px;
-}
-
-/* Mini Player */
-.mini-player{
-position:fixed;
-bottom:60px;
-width:100%;
-background:#1a0033;
-padding:10px;
-text-align:center;
-}
-
-/* Equalizer */
-.equalizer{
-display:flex;
-justify-content:center;
-margin-top:5px;
-}
-.bar{
-width:4px;
-height:15px;
-background:#ff00cc;
-margin:0 3px;
-animation:wave 1s infinite ease-in-out;
-}
-.bar:nth-child(2){animation-delay:.2s}
-.bar:nth-child(3){animation-delay:.4s}
-.bar:nth-child(4){animation-delay:.6s}
-.bar:nth-child(5){animation-delay:.8s}
-@keyframes wave{
-0%,100%{height:10px}
-50%{height:25px}
-}
-
-/* Bottom Nav */
-.bottom-nav{
-position:fixed;
-bottom:0;
-width:100%;
-display:flex;
-justify-content:space-around;
-background:#10001f;
-padding:12px;
-}
-.bottom-nav button{
-background:none;
-border:none;
-color:white;
-font-size:14px;
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>D-Music Player</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
-
 <body>
 
-<div class="header">
-  <div>D-Music</div>
-  <div>⚙️</div>
+<div class="app-container">
+    <header>
+        <h1 class="logo">D-Music</h1>
+        <i class="fas fa-cog settings-icon"></i>
+    </header>
+
+    <div class="hero-banner">
+        <img src="https://via.placeholder.com/400x150/4B0082/FFFFFF?text=Music+Vibe" alt="Banner">
+    </div>
+
+    <div class="search-box">
+        <i class="fas fa-search"></i>
+        <input type="text" placeholder="Search music...">
+    </div>
+
+    <section class="trending">
+        <h3>Trending Now</h3>
+        <div class="card-row">
+            <div class="card" style="background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('https://via.placeholder.com/150x200'); background-size: cover;">
+                <p>Synthwave Vibes</p>
+                <i class="fas fa-play-circle play-btn"></i>
+            </div>
+            <div class="card" style="background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('https://via.placeholder.com/150x200'); background-size: cover;">
+                <p>Romantic Hits</p>
+                <i class="fas fa-play-circle play-btn"></i>
+            </div>
+        </div>
+    </section>
+
+    <div class="categories">
+        <div class="cat-item"><i class="fas fa-headphones"></i><br>Playlists</div>
+        <div class="cat-item"><i class="fas fa-chart-bar"></i><br>Genres</div>
+        <div class="cat-item"><i class="fas fa-heart"></i><br>Favorites</div>
+    </div>
+
+    <div class="mini-player">
+        <img src="https://via.placeholder.com/50" class="album-art">
+        <div class="song-info">
+            <span class="song-title">Summer Vibes</span>
+            <span class="artist">DJ Pulse</span>
+        </div>
+        <div class="player-controls">
+            <i class="fas fa-heart"></i>
+            <i class="fas fa-pause-circle pause-btn"></i>
+            <i class="fas fa-step-forward"></i>
+        </div>
+    </div>
+
+    <nav class="bottom-nav">
+        <div class="nav-item active"><i class="fas fa-home"></i><br>Home</div>
+        <div class="nav-item"><i class="fas fa-music"></i><br>Explore</div>
+        <div class="nav-item"><i class="fas fa-heart"></i><br>Library</div>
+        <div class="nav-item"><i class="fas fa-user"></i><br>Profile</div>
+    </nav>
 </div>
-
-<div class="banner">
-  Feel The Music 🎧
-</div>
-
-<div class="search-box">
-  <input type="text" id="searchInput" placeholder="Search songs...">
-  <button onclick="searchMusic()">Search</button>
-</div>
-
-<div class="results" id="results"></div>
-
-<!-- Mini Player -->
-<div class="mini-player">
-  <div id="nowPlaying">No song playing</div>
-  <div id="player"></div>
-
-  <div class="equalizer">
-    <div class="bar"></div>
-    <div class="bar"></div>
-    <div class="bar"></div>
-    <div class="bar"></div>
-    <div class="bar"></div>
-  </div>
-</div>
-
-<!-- Bottom Nav -->
-<div class="bottom-nav">
-  <button onclick="scrollToTop()">Home</button>
-  <button onclick="focusSearch()">Search</button>
-  <button onclick="clearResults()">Library</button>
-</div>
-
-<script>
-const API_KEY="AIzaSyAfJIHop06R94612CGPmMiTByy5hUarL1M";
-
-let player;
-let ready=false;
-
-function onYouTubeIframeAPIReady(){
-player=new YT.Player('player',{
-height:'0',
-width:'0',
-videoId:'',
-playerVars:{playsinline:1},
-events:{
-'onReady':function(){ ready=true; }
-}
-});
-}
-
-function searchMusic(){
-let query=document.getElementById("searchInput").value;
-
-fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=10&q=${query}&key=${API_KEY}`)
-.then(res=>res.json())
-.then(data=>{
-let results=document.getElementById("results");
-results.innerHTML="";
-
-data.items.forEach(item=>{
-let videoId=item.id.videoId;
-let title=item.snippet.title;
-let thumb=item.snippet.thumbnails.medium.url;
-
-let card=document.createElement("div");
-card.className="card";
-card.innerHTML=`<img src="${thumb}"><div>${title}</div>`;
-card.onclick=function(){
-if(ready){
-player.loadVideoById(videoId);
-document.getElementById("nowPlaying").innerText="Playing: "+title;
-}
-};
-results.appendChild(card);
-});
-});
-}
-
-function scrollToTop(){
-window.scrollTo({top:0,behavior:"smooth"});
-}
-function focusSearch(){
-document.getElementById("searchInput").focus();
-}
-function clearResults(){
-document.getElementById("results").innerHTML="";
-}
-</script>
 
 </body>
 </html>
