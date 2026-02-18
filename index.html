@@ -3,293 +3,169 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>D-Music | Debraj Pramanik</title>
+    <title>D-Music | Search & Play</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        /* CSS Section */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', sans-serif;
-        }
-
-        body {
-            background-color: #0b021d;
-            color: white;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background-color: #0b021d; color: white; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        
         .app-container {
-            width: 360px;
-            height: 740px;
+            width: 360px; height: 740px;
             background: linear-gradient(180deg, #1a0533 0%, #0b021d 100%);
-            padding: 20px;
-            position: relative;
-            border-radius: 40px;
-            border: 4px solid #2a1b4d;
-            box-shadow: 0 0 30px rgba(157, 0, 255, 0.2);
-            overflow: hidden;
+            padding: 20px; position: relative; border-radius: 40px;
+            border: 4px solid #2a1b4d; box-shadow: 0 0 30px rgba(157, 0, 255, 0.2);
+            overflow: hidden; display: flex; flex-direction: column;
         }
 
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
+        .logo { font-size: 24px; font-weight: bold; text-shadow: 0 0 10px #ff00ff; margin-bottom: 20px; }
 
-        .logo {
-            font-size: 24px;
-            font-weight: bold;
-            color: #fff;
-            text-shadow: 0 0 10px #ff00ff;
-        }
-
-        .hero-banner {
-            width: 100%;
-            height: 160px;
-            background: url('https://images.unsplash.com/photo-1470225620780-dba8ba36b745?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60') center/cover;
-            border-radius: 20px;
-            box-shadow: 0 0 20px rgba(157, 0, 255, 0.5);
-            margin-bottom: 20px;
-        }
-
+        /* Search Section */
         .search-box {
-            background: #2a1b4d;
-            padding: 12px;
-            border-radius: 15px;
-            display: flex;
-            align-items: center;
-            margin-bottom: 25px;
+            background: #2a1b4d; padding: 12px; border-radius: 15px;
+            display: flex; align-items: center; margin-bottom: 15px;
         }
-
         .search-box input {
-            background: transparent;
-            border: none;
-            color: white;
-            margin-left: 10px;
-            width: 100%;
-            outline: none;
+            background: transparent; border: none; color: white;
+            margin-left: 10px; width: 100%; outline: none;
         }
 
-        .card-row {
-            display: flex;
-            gap: 15px;
-            margin-top: 15px;
-            overflow-x: auto;
+        /* Results Area */
+        #results-container {
+            flex: 1; overflow-y: auto; margin-bottom: 80px;
+            scrollbar-width: none;
         }
-
-        .card {
-            min-width: 140px;
-            height: 180px;
-            border-radius: 20px;
-            position: relative;
-            padding: 15px;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-end;
-            background-size: cover;
-            border: 1px solid rgba(255, 0, 255, 0.3);
+        .result-item {
+            display: flex; align-items: center; gap: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            margin-bottom: 10px; padding: 10px; border-radius: 12px;
+            cursor: pointer; transition: 0.3s;
         }
+        .result-item:hover { background: rgba(255, 0, 255, 0.1); }
+        .result-item img { width: 60px; height: 60px; border-radius: 8px; object-fit: cover; }
+        .result-info { flex: 1; overflow: hidden; }
+        .result-title { font-size: 14px; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .result-channel { font-size: 11px; color: #aaa; }
 
-        .play-icon-card {
-            position: absolute;
-            bottom: 10px;
-            right: 10px;
-            font-size: 28px;
-            color: #ff00ff;
-            cursor: pointer;
-        }
+        /* Video Player Wrapper (Hidden) */
+        #player-wrapper { display: none; }
 
-        .categories {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 25px;
-        }
-
-        .cat-item {
-            text-align: center;
-            background: #1e0b3a;
-            padding: 10px;
-            border-radius: 15px;
-            width: 75px;
-            font-size: 11px;
-            border: 1px solid #4b0082;
-        }
-
-        .cat-item i {
-            font-size: 18px;
-            margin-bottom: 5px;
-            color: #00ffff;
-        }
-
-        /* Player Control Section */
+        /* Mini Player Style */
         .mini-player {
-            position: absolute;
-            bottom: 85px;
-            left: 15px;
-            right: 15px;
-            background: rgba(42, 27, 77, 0.95);
-            padding: 12px;
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            border: 1px solid rgba(255, 0, 255, 0.5);
+            position: absolute; bottom: 15px; left: 15px; right: 15px;
+            background: rgba(42, 27, 77, 0.95); padding: 12px;
+            border-radius: 20px; display: flex; align-items: center;
+            gap: 12px; border: 1px solid rgba(255, 0, 255, 0.5);
         }
-
-        .album-art {
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            animation: rotate 5s linear infinite;
-            animation-play-state: paused;
-        }
-
+        .album-art { width: 45px; height: 45px; border-radius: 50%; }
         .song-info { flex: 1; }
-        .song-title { display: block; font-weight: bold; font-size: 14px; }
-        .artist { font-size: 11px; color: #bbb; }
-
-        .progress-container {
-            background: #331a5e;
-            height: 4px;
-            width: 100%;
-            border-radius: 5px;
-            margin-top: 8px;
-            cursor: pointer;
-        }
-
-        .progress-bar {
-            background: linear-gradient(90deg, #ff00ff, #00ffff);
-            height: 100%;
-            width: 0%;
-            border-radius: 5px;
-        }
-
-        .player-controls i {
-            margin-left: 12px;
-            font-size: 22px;
-            color: #ff00ff;
-            cursor: pointer;
-        }
-
-        .bottom-nav {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 70px;
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            background: #0b021d;
-            border-top: 1px solid #2a1b4d;
-        }
-
-        .nav-item { text-align: center; font-size: 11px; color: #888; cursor: pointer; }
-        .nav-item.active { color: #ff00ff; }
-
-        @keyframes rotate {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
+        .song-title { display: block; font-weight: bold; font-size: 13px; }
+        #play-pause { font-size: 24px; color: #ff00ff; cursor: pointer; }
     </style>
 </head>
 <body>
 
 <div class="app-container">
-    <header>
-        <h1 class="logo">D-Music</h1>
-        <i class="fas fa-cog"></i>
-    </header>
-
-    <div class="hero-banner"></div>
+    <h1 class="logo">D-Music</h1>
 
     <div class="search-box">
         <i class="fas fa-search"></i>
-        <input type="text" placeholder="Search music...">
+        <input type="text" id="search-input" placeholder="Search YouTube Music...">
     </div>
 
-    <h3>Trending Now</h3>
-    <div class="card-row">
-        <div class="card" style="background-image: linear-gradient(rgba(0,0,0,0.4),rgba(0,0,0,0.4)), url('https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=200');">
-            <span>Synthwave</span>
-            <i class="fas fa-play-circle play-icon-card"></i>
-        </div>
-        <div class="card" style="background-image: linear-gradient(rgba(0,0,0,0.4),rgba(0,0,0,0.4)), url('https://images.unsplash.com/photo-1514525253344-a813099ac86b?w=200');">
-            <span>Party Mix</span>
-            <i class="fas fa-play-circle play-icon-card"></i>
-        </div>
+    <div id="results-container">
+        <p style="text-align: center; color: #888; margin-top: 50px;">Search for a song to start listening</p>
     </div>
 
-    <div class="categories">
-        <div class="cat-item"><i class="fas fa-list"></i><br>Playlist</div>
-        <div class="cat-item"><i class="fas fa-bolt"></i><br>Genres</div>
-        <div class="cat-item"><i class="fas fa-heart"></i><br>Liked</div>
-        <div class="cat-item"><i class="fas fa-broadcast-tower"></i><br>Radio</div>
+    <div id="player-wrapper">
+        <div id="youtube-player"></div>
     </div>
 
     <div class="mini-player">
-        <audio id="main-audio" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"></audio>
-        <img src="https://cdn-icons-png.flaticon.com/512/3659/3659784.png" class="album-art" id="art">
+        <img src="https://cdn-icons-png.flaticon.com/512/3659/3659784.png" id="current-art" class="album-art">
         <div class="song-info">
-            <span class="song-title">Summer Vibes</span>
-            <span class="artist">DJ Pulse</span>
-            <div class="progress-container" id="progress-container">
-                <div class="progress-bar" id="progress-bar"></div>
-            </div>
+            <span class="song-title" id="current-title">Not Playing</span>
+            <span id="current-artist" style="font-size: 10px; color: #bbb;">Select a song</span>
         </div>
-        <div class="player-controls">
-            <i class="fas fa-play-circle" id="play-pause"></i>
-        </div>
+        <i class="fas fa-play-circle" id="play-pause"></i>
     </div>
-
-    <nav class="bottom-nav">
-        <div class="nav-item active"><i class="fas fa-home"></i><br>Home</div>
-        <div class="nav-item"><i class="fas fa-compass"></i><br>Explore</div>
-        <div class="nav-item"><i class="fas fa-heart"></i><br>Library</div>
-        <div class="nav-item"><i class="fas fa-user"></i><br>Profile</div>
-    </nav>
 </div>
 
+<script src="https://www.youtube.com/iframe_api"></script>
 <script>
-    const audio = document.getElementById('main-audio');
-    const playBtn = document.getElementById('play-pause');
-    const progress = document.getElementById('progress-bar');
-    const progressContainer = document.getElementById('progress-container');
-    const albumArt = document.getElementById('art');
+    const API_KEY = 'AIzaSyAfJIHop06R94612CGPmMiTByy5hUarL1M'; // এখানে আপনার API Key বসান
+    const searchInput = document.getElementById('search-input');
+    const resultsContainer = document.getElementById('results-container');
+    let player;
 
-    // Play/Pause function
-    playBtn.addEventListener('click', () => {
-        if (audio.paused) {
-            audio.play();
-            playBtn.classList.replace('fa-play-circle', 'fa-pause-circle');
-            albumArt.style.animationPlayState = 'running';
-        } else {
-            audio.pause();
-            playBtn.classList.replace('fa-pause-circle', 'fa-play-circle');
-            albumArt.style.animationPlayState = 'paused';
+    // Initialize YouTube Player
+    function onYouTubeIframeAPIReady() {
+        player = new YT.Player('youtube-player', {
+            height: '0', width: '0',
+            events: { 'onStateChange': onPlayerStateChange }
+        });
+    }
+
+    // Search function
+    searchInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            searchMusic(searchInput.value);
         }
     });
 
-    // Progress bar update
-    audio.addEventListener('timeupdate', (e) => {
-        const { duration, currentTime } = e.srcElement;
-        const progressPercent = (currentTime / duration) * 100;
-        progress.style.width = `${progressPercent}%`;
-    });
+    async function searchMusic(query) {
+        resultsContainer.innerHTML = '<p style="text-align: center;">Searching...</p>';
+        const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=10&q=${query}&type=video&key=${API_KEY}`;
+        
+        try {
+            const response = await fetch(url);
+            const data = await response.json();
+            displayResults(data.items);
+        } catch (error) {
+            resultsContainer.innerHTML = '<p color="red">Error fetching data</p>';
+        }
+    }
 
-    // Click on progress bar to change time
-    progressContainer.addEventListener('click', (e) => {
-        const width = progressContainer.clientWidth;
-        const clickX = e.offsetX;
-        const duration = audio.duration;
-        audio.currentTime = (clickX / width) * duration;
-    });
+    function displayResults(items) {
+        resultsContainer.innerHTML = '';
+        items.forEach(item => {
+            const div = document.createElement('div');
+            div.className = 'result-item';
+            div.innerHTML = `
+                <img src="${item.snippet.thumbnails.default.url}">
+                <div class="result-info">
+                    <div class="result-title">${item.snippet.title}</div>
+                    <div class="result-channel">${item.snippet.channelTitle}</div>
+                </div>
+            `;
+            div.onclick = () => playVideo(item.id.videoId, item.snippet.title, item.snippet.thumbnails.default.url, item.snippet.channelTitle);
+            resultsContainer.appendChild(div);
+        });
+    }
+
+    function playVideo(id, title, art, artist) {
+        player.loadVideoById(id);
+        document.getElementById('current-title').innerText = title;
+        document.getElementById('current-artist').innerText = artist;
+        document.getElementById('current-art').src = art;
+        document.getElementById('play-pause').classList.replace('fa-play-circle', 'fa-pause-circle');
+    }
+
+    document.getElementById('play-pause').onclick = () => {
+        const state = player.getPlayerState();
+        if (state === 1) { // 1 = Playing
+            player.pauseVideo();
+            document.getElementById('play-pause').classList.replace('fa-pause-circle', 'fa-play-circle');
+        } else {
+            player.playVideo();
+            document.getElementById('play-pause').classList.replace('fa-play-circle', 'fa-pause-circle');
+        }
+    };
+
+    function onPlayerStateChange(event) {
+        if (event.data === YT.PlayerState.ENDED) {
+            document.getElementById('play-pause').classList.replace('fa-pause-circle', 'fa-play-circle');
+        }
+    }
 </script>
 
 </body>
