@@ -22,7 +22,40 @@ body {
     border: 5px solid #2a1b4d;
     border-radius: 40px;
 }
+.search-box {
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 30px;
+  padding: 12px 18px;
+  margin: 15px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 0 15px rgba(255, 0, 255, 0.3);
+  transition: 0.3s;
+}
 
+.search-box:hover {
+  box-shadow: 0 0 25px rgba(255, 0, 255, 0.6);
+}
+
+.search-icon {
+  font-size: 18px;
+  margin-right: 10px;
+  color: #ff4dff;
+}
+
+.search-box input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: white;
+  font-size: 16px;
+}
+
+.search-box input::placeholder {
+  color: #ccc;
+}
 header {
     display: flex;
     justify-content: space-between;
