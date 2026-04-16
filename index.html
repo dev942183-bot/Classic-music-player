@@ -1,174 +1,152 @@
  <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>D-Music YouTube Integrated</title>
-    <style>
-        :root {
-            --bg-color: #12002b;
-            --accent-color: #bc13fe;
-            --card-bg: rgba(255, 255, 255, 0.1);
-        }
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>D-Music</title>
 
-        body {
-            margin: 0;
-            background: linear-gradient(180deg, #1a0033 0%, #000000 100%);
-            color: white;
-            font-family: 'Segoe UI', sans-serif;
-            display: flex;
-            justify-content: center;
-        }
+<script src="https://www.youtube.com/iframe_api"></script>
 
-        .phone {
-            width: 360px;
-            height: 740px;
-            background: var(--bg-color);
-            border-radius: 40px;
-            border: 8px solid #333;
-            position: relative;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-        }
+<style>
+body{
+margin:0;
+font-family:Arial;
+background:linear-gradient(180deg,#1a0033,#3a0066);
+color:white;
+}
 
-        /* Header */
-        .header { padding: 20px; display: flex; justify-content: space-between; align-items: center; }
-        .logo { font-size: 24px; font-weight: bold; color: #ff00cc; }
+.header{
+display:flex;
+justify-content:space-between;
+padding:15px;
+font-size:22px;
+font-weight:bold;
+}
 
-        /* Search */
-        .search {
-            margin: 0 20px 20px;
-            padding: 10px;
-            background: var(--card-bg);
-            border-radius: 20px;
-            border: 1px solid rgba(255,255,255,0.1);
-            color: #ccc;
-        }
+.search{
+display:flex;
+margin:10px;
+}
+.search input{
+flex:1;
+padding:12px;
+border-radius:25px;
+border:none;
+}
+.search button{
+margin-left:8px;
+padding:12px;
+border:none;
+border-radius:25px;
+background:#ff00cc;
+color:white;
+}
 
-        /* Trending Section */
-        .section-title { padding-left: 20px; margin-bottom: 10px; }
-        #trending-list {
-            display: flex;
-            gap: 15px;
-            padding: 0 20px;
-            overflow-x: auto;
-            scrollbar-width: none;
-        }
+.results{
+padding:10px;
+}
 
-        .video-card {
-            min-width: 140px;
-            background: #2a0055;
-            border-radius: 15px;
-            overflow: hidden;
-            border: 1px solid rgba(188, 19, 254, 0.3);
-        }
+.card{
+background:#2a004d;
+margin:10px 0;
+padding:10px;
+border-radius:15px;
+display:flex;
+align-items:center;
+cursor:pointer;
+}
+.card img{
+width:80px;
+border-radius:10px;
+margin-right:10px;
+}
 
-        .video-card img { width: 100%; height: 100px; object-fit: cover; }
-        .video-card p {
-            font-size: 11px;
-            padding: 8px;
-            margin: 0;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
+.player{
+position:fixed;
+bottom:0;
+width:100%;
+background:#140026;
+padding:10px;
+text-align:center;
+}
 
-        /* Player Bar */
-        .player {
-            position: absolute;
-            bottom: 70px;
-            width: 90%;
-            left: 5%;
-            background: rgba(60, 0, 120, 0.8);
-            backdrop-filter: blur(10px);
-            padding: 10px;
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .player img { width: 45px; height: 45px; border-radius: 50%; border: 2px solid var(--accent-color); }
-
-        /* Nav */
-        .nav {
-            position: absolute;
-            bottom: 0;
-            width: 100%;
-            height: 60px;
-            background: #000;
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            font-size: 20px;
-        }
-    </style>
+</style>
 </head>
+
 <body>
 
-<div class="phone">
-    <div class="header">
-        <div class="logo">D-Music</div>
-        <div>⚙️</div>
-    </div>
+<div class="header">
+  <div>D-Music</div>
+  <div>⚙️</div>
+</div>
 
-    <div class="search">🔍 Search on YouTube...</div>
+<div class="search">
+  <input id="searchInput" placeholder="Search song...">
+  <button onclick="searchMusic()">Search</button>
+</div>
 
-    <h3 class="section-title">Trending Now</h3>
-    <div id="trending-list">
-        <p style="padding: 20px;">Loading songs...</p>
-    </div>
+<div class="results" id="results"></div>
 
-    <div class="player">
-        <img id="current-art" src="https://via.placeholder.com/50" alt="">
-        <div style="flex:1">
-            <div id="current-title" style="font-size: 13px; font-weight: bold;">Select a song</div>
-            <div style="font-size: 10px; color: #aaa;">YouTube Stream</div>
-        </div>
-        <div style="font-size: 20px;">⏸ ⏭</div>
-    </div>
-
-    <div class="nav">
-        <span>🏠</span><span>🎵</span><span>❤️</span><span>👤</span>
-    </div>
+<div class="player">
+  <div id="nowPlaying">Select a song</div>
+  <div id="player"></div>
 </div>
 
 <script>
-    // আপনার API Key এখানে বসান
-    const API_KEY = ' AIzaSyAfJIHop06R94612CGPmMiTByy5hUarL1M'; 
-    const query = 'new hindi hit songs 2026';
 
-    async function getYouTubeData() {
-        const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=6&q=${query}&type=video&key=${API_KEY}`;
+const API_KEY = " AIzaSyAfJIHop06R94612CGPmMiTByy5hUarL1M";
 
-        try {
-            const response = await fetch(url);
-            const data = await response.json();
-            const list = document.getElementById('trending-list');
-            list.innerHTML = ''; // Clear loading text
+let player;
+let ready=false;
 
-            data.items.forEach(item => {
-                const card = document.createElement('div');
-                card.className = 'video-card';
-                card.innerHTML = `
-                    <img src="${item.snippet.thumbnails.medium.url}" onclick="playSong('${item.snippet.title}', '${item.snippet.thumbnails.default.url}')">
-                    <p>${item.snippet.title}</p>
-                `;
-                list.appendChild(card);
-            });
-        } catch (error) {
-            console.error("Error:", error);
-            document.getElementById('trending-list').innerHTML = "Failed to load API.";
+function onYouTubeIframeAPIReady(){
+  player = new YT.Player('player',{
+    height:'0',
+    width:'0',
+    videoId:'',
+    events:{
+      'onReady':()=>{ ready=true; }
+    }
+  });
+}
+
+function searchMusic(){
+  let q = document.getElementById("searchInput").value;
+
+  fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&q=${q}&maxResults=10&key=${API_KEY}`)
+  .then(r=>r.json())
+  .then(data=>{
+
+    let results=document.getElementById("results");
+    results.innerHTML="";
+
+    data.items.forEach(v=>{
+      let id=v.id.videoId;
+      let title=v.snippet.title;
+      let img=v.snippet.thumbnails.medium.url;
+
+      let div=document.createElement("div");
+      div.className="card";
+
+      div.innerHTML=`
+        <img src="${img}">
+        <div>${title}</div>
+      `;
+
+      div.onclick=()=>{
+        if(ready){
+          player.loadVideoById(id);
+          document.getElementById("nowPlaying").innerText=title;
+        }else{
+          alert("Player loading...");
         }
-    }
+      };
 
-    function playSong(title, img) {
-        document.getElementById('current-title').innerText = title;
-        document.getElementById('current-art').src = img;
-    }
+      results.appendChild(div);
+    });
 
-    getYouTubeData();
+  });
+}
+
 </script>
 
 </body>
