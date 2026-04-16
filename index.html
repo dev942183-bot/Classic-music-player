@@ -41,12 +41,12 @@ padding:10px;
 
 .cards{
 display:flex;
-overflow-x:auto;
+flex-wrap:wrap;
 }
 
 .card{
-min-width:160px;
-margin-right:10px;
+width:48%;
+margin:1%;
 background:#4b0082;
 border-radius:15px;
 overflow:hidden;
@@ -57,7 +57,17 @@ width:100%;
 }
 .card p{
 padding:8px;
-font-size:14px;
+font-size:13px;
+}
+
+.loadbtn{
+width:100%;
+padding:12px;
+border:none;
+border-radius:20px;
+background:#ff00cc;
+color:white;
+margin-top:10px;
 }
 
 .player{
@@ -125,6 +135,8 @@ let player;
 let ready=false;
 let playlist=[];
 let index=0;
+let nextPageToken="";
+let currentQuery="";
 
 function onYouTubeIframeAPIReady(){
   player=new YT.Player('player',{
@@ -141,35 +153,60 @@ function autoSearch(){
   let q=document.getElementById("searchInput").value;
   if(q.length<3) return;
 
-  fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&q=${q}&maxResults=10&key=${API_KEY}`)
+  currentQuery=q;
+  nextPageToken="";
+  playlist=[];
+  document.getElementById("results").innerHTML="";
+
+  fetchVideos();
+}
+
+function fetchVideos(){
+  let url=`https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&q=${currentQuery}&maxResults=20&key=${API_KEY}`;
+
+  if(nextPageToken){
+    url+=`&pageToken=${nextPageToken}`;
+  }
+
+  fetch(url)
   .then(r=>r.json())
   .then(data=>{
 
-    playlist=data.items;
+    nextPageToken=data.nextPageToken;
 
     let results=document.getElementById("results");
-    results.innerHTML="";
 
-    data.items.forEach((v,i)=>{
-      let id=v.id.videoId;
-      let title=v.snippet.title;
-      let img=v.snippet.thumbnails.medium.url;
+    data.items.forEach((v)=>{
+      playlist.push(v);
 
       let div=document.createElement("div");
       div.className="card";
 
       div.innerHTML=`
-        <img src="${img}">
-        <p>${title}</p>
+        <img src="${v.snippet.thumbnails.medium.url}">
+        <p>${v.snippet.title}</p>
       `;
 
       div.onclick=()=>{
-        index=i;
+        index=playlist.indexOf(v);
         playCurrent();
       };
 
       results.appendChild(div);
     });
+
+    // Load More Button
+    let oldBtn=document.getElementById("loadMoreBtn");
+    if(oldBtn) oldBtn.remove();
+
+    if(nextPageToken){
+      let btn=document.createElement("button");
+      btn.id="loadMoreBtn";
+      btn.className="loadbtn";
+      btn.innerText="Load More";
+      btn.onclick=fetchVideos;
+      results.appendChild(btn);
+    }
 
   });
 }
@@ -178,9 +215,7 @@ function playCurrent(){
   if(!ready) return;
 
   let v=playlist[index];
-  let id=v.id.videoId;
-
-  player.loadVideoById(id);
+  player.loadVideoById(v.id.videoId);
 
   document.getElementById("title").innerText=v.snippet.title;
   document.getElementById("thumb").src=v.snippet.thumbnails.medium.url;
